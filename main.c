@@ -1,15 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
+#include <errno.h>
 
 
 int sock, newSock;  //file descriptor del socket
+int clientLen;
 int port;             //numero del puerto
 int charReadWriteSize;
+char *ipAddr;
 char buffer[256];
 
 struct sockaddr_in serv_addr, cli_addr; //direccion del servidor y el cliente
@@ -22,37 +28,34 @@ void error(char *msg){
 
 void initServer(){
 
-  int sock, newSock;  //file descriptor del socket
-  int port;             //numero del puerto
-  int charReadWriteSize;
-  char buffer[256];
-  struct sockaddr_in serv_addr, cli_addr; //direccion del servidor y el cliente
-
   sock = socket(AF_INET, SOCK_STREAM,0);
   if (sock < 0)   //error creando el socket
     error("ERROR opening socket");
 
+  memset(&serv_addr, '0', sizeof(serv_addr));
+  memset(buffer, '0', sizeof(buffer));
 
    port = 1234;  //////////////////////////////////////////////cambiar despues
 
-  bzero((char*) &serv_addr, sizeof(serv_addr));   //inicializar en 0
+  //bzero((char*) &serv_addr, sizeof(serv_addr));   //inicializar en 0
 
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = INADDR_ANY;   //direccion ip de la maquina
+  serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);   //direccion ip de la maquina
   serv_addr.sin_port = htons(port);
 
-  if (!bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)))
+  if (!bind(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr)))
     error("ERROR on binding");
 
 
   listen(sock,2);     //listo para recibir conexiones
 
-  newSock = accept(sock, (struct sockaddr *) &cli_addr, sizeof(cli_addr));
+  clientLen = sizeof(cli_addr);
+  newSock = accept(sock, (struct sockaddr*) &cli_addr, &clientLen);
   if(newSock < 0)
     error("ERROR on accept");
 
 
-  bzero(buffer, sizeof(buffer));
+  //bzero(buffer, sizeof(buffer));
   charReadWriteSize = read(newSock, buffer, sizeof(buffer));
   if(charReadWriteSize < 0)
     error("ERROR reading from socket");
@@ -67,24 +70,25 @@ void initClient(){
     error("ERROR opening socket");
 
   port = 1234;
+  ipAddr = "127.0.0.1";
   server = gethostbyname("Cruciatus");
   if(!server)
     error("ERROR no host");
 
-  bzero((char *) &serv_addr, sizeof(serv_addr));
+  //bzero((char *) &serv_addr, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
-  bcopy((char *)server -> h_addr, (char *) serv_addr.sin_addr.s_addr, server -> h_length);
+  serv_addr.sin_addr.s_addr = inet_addr(ipAddr);
   serv_addr.sin_port = htons(port);
 
-  if (connect(sockfd,&serv_addr,sizeof(serv_addr)) < 0)
+  if (connect(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0)
     error("ERROR connecting");
 
   printf("Please enter the message: ");
-  bzero(buffer,256);
+  //bzero(buffer,256);
   fgets(buffer,255,stdin);
-  charReadWriteSize = write(sockfd,buffer,strlen(buffer));
+  charReadWriteSize = write(sock,buffer,strlen(buffer));
 
-  if (n < 0)
+  if (charReadWriteSize < 0)
     error("ERROR writing to socket");
 }
 
