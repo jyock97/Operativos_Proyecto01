@@ -32,7 +32,6 @@ void initServer(){
   if (sock < 0)   //error creando el socket
     error("ERROR opening socket");
 
-  memset(&serv_addr, '0', sizeof(serv_addr));
   memset(buffer, '0', sizeof(buffer));
 
    port = 5000;  //////////////////////////////////////////////cambiar despues
@@ -66,7 +65,7 @@ void initClient(){
   if (sock < 0)   //error creando el socket
     error("ERROR opening socket");
 
-  port = 1234;
+  port = 5000;
   ipAddr = "192.168.1.120";
 
   //bzero((char *) &serv_addr, sizeof(serv_addr));
