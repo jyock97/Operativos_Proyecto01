@@ -52,7 +52,7 @@ void initServer(){
   newSock = accept(sock, (struct sockaddr*) &cli_addr, &clientLen);
   if(newSock < 0)
     error("ERROR on accept");
-
+  printf("Se realiza la conexion\n");
   useSock = newSock;
 
   /*fflush(stdin);
@@ -75,6 +75,7 @@ void initClient(){
   if (connect(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0)
     error("ERROR connecting");
 
+  printf("Se realiza conexion\n");
   useSock = sock;
   /*printf("Please enter the message: ");
   //bzero(buffer,256);
