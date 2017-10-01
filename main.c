@@ -67,6 +67,7 @@ void initClient(){
 
   printf("Ingrese el ip del servidor: ");
   scanf("%s\n", ipAddr);
+  printf("IP: %s\n", ipAddr);
 
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_addr.s_addr = inet_addr(ipAddr);
