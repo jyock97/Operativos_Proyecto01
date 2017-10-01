@@ -56,11 +56,7 @@ void initServer(){
   useSock = newSock;
 
   /*fflush(stdin);
-  charReadWriteSize = read(newSock, buffer, sizeof(buffer));
-  if(charReadWriteSize < 0)
-    error("ERROR reading from socket");
-
-  printf("%s\n", buffer);*/
+  charReadWriteSize = read(newSock, buffer, sizeof(buffer));*/
 }
 
 void initClient(){
