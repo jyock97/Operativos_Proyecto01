@@ -16,9 +16,10 @@ int clientLen;
 int port = 5000;             //numero del puerto
 int charReadWriteSize;
 char *ipAddr;//[16];
+char clientIP[16];
 char buffer[256];
 
-struct sockaddr_in serv_addr, cli_addr; //direccion del servidor y el cliente
+struct sockaddr_in servAddr, cliAddr; //direccion del servidor y el cliente
 struct hostent *server;
 
 int retval;
@@ -35,29 +36,36 @@ void initServer(){
   sock = socket(AF_INET, SOCK_STREAM, 0);
   if (sock < 0)   //error creando el socket
     error("ERROR opening socket");
+  printf("Socket creando\n");
 
-  memset(buffer, '0', sizeof(buffer));
+  memset(&servAddr, 0, sizeof(servAddr));
+  servAddr.sin_family = AF_INET;
+  servAddr.sin_addr.s_addr = htonl(INADDR_ANY);   //direccion ip de la maquina
+  servAddr.sin_port = htons(port);
 
-   port = 5000;  //////////////////////////////////////////////cambiar despues
-
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);   //direccion ip de la maquina
-  serv_addr.sin_port = htons(port);
-
-  bind(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr));
+  retval = bind(sock, (struct sockaddr*) &servAddr, sizeof(servAddr));
+  if(retval < 0)
+    error("Error binding");
+  printf("Binding hecho\n");
 
   listen(sock,2);     //listo para recibir conexiones
 
-  clientLen = sizeof(cli_addr);
-  newSock = accept(sock, (struct sockaddr*) &cli_addr, &clientLen);
+  clientLen = sizeof(cliAddr);
+  newSock = accept(sock, (struct sockaddr*) &cliAddr, &clientLen);
   if(newSock < 0)
     error("ERROR on accept");
-  printf("Se realiza la conexion\n");
+
+  //memset(buffer, '0', sizeof(buffer));
+  inet_ntop(AF_INET, &(cliAddr.sin_addr), clientIP, sizeof(clientIP));
+  printf("Se realiza la conexion con el cliente: %s\n", clientIP);
   useSock = newSock;
 
-  //fflush(stdin);
-  charReadWriteSize = read(newSock, buffer, sizeof(buffer));
-  if(charReadWriteSize > 0) printf("%s\n", buffer);
+  /*while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
+  ret = sendto(newsockfd, buffer, BUF_SIZE, 0, (struct sockaddr *) &cl_addr, len);
+  if (ret < 0) {
+   printf("Error sending data!\n");
+   exit(1);
+  }*/
 }
 
 void initClient(){
@@ -71,11 +79,11 @@ void initClient(){
   ipAddr = "192.168.1.120";
   printf("IP: %s\n", ipAddr);
 
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_addr.s_addr = inet_addr(ipAddr);
-  serv_addr.sin_port = htons(port);
+  servAddr.sin_family = AF_INET;
+  servAddr.sin_addr.s_addr = inet_addr(ipAddr);
+  servAddr.sin_port = htons(port);
 
-  if (connect(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0)
+  if (connect(sock, (struct sockaddr*) &servAddr, sizeof(servAddr)) < 0)
     error("ERROR connecting");
 
   printf("Se realiza conexion\n");
