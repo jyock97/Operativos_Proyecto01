@@ -55,8 +55,8 @@ void initServer(){
   printf("Se realiza la conexion\n");
   useSock = newSock;
 
-  /*fflush(stdin);
-  charReadWriteSize = read(newSock, buffer, sizeof(buffer));*/
+  //fflush(stdin);
+  charReadWriteSize = read(newSock, buffer, sizeof(buffer));
 }
 
 void initClient(){
@@ -79,13 +79,13 @@ void initClient(){
 
   printf("Se realiza conexion\n");
   useSock = sock;
-  /*printf("Please enter the message: ");
+  printf("Please enter the message: ");
   //bzero(buffer,256);
   fgets(buffer,255,stdin);
   charReadWriteSize = write(sock,buffer,strlen(buffer));
 
   if (charReadWriteSize < 0)
-    error("ERROR writing to socket");*/
+    error("ERROR writing to socket");
 }
 
 int main(){
