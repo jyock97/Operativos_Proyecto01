@@ -124,9 +124,9 @@ int main(){
 
   timeOut.tv_sec = 2;
   timeOut.tv_usec = 0;
+  FD_ZERO(&fdList);
   while (1) {
 
-    FD_ZERO(&fdList);
     FD_SET(0, &fdList);
     FD_SET(useSock, &fdList);
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, &timeOut);
