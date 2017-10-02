@@ -94,6 +94,7 @@ void initClient(){
   printf("Please enter the message: ");
   //bzero(buffer,256);
   fflush(stdin);
+  fflush(stdout);
   fgets(buffer,255,stdin);
   //strcpy(buffer, "HOLA MUNDO\n\n");
   charReadWriteSize = write(sock,buffer,strlen(buffer));
