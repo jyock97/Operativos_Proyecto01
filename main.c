@@ -60,6 +60,9 @@ void initServer(){
   printf("Se realiza la conexion con el cliente: %s\n", clientIP);
   useSock = newSock;
 
+  charReadWriteSize = read(useSock, buffer, sizeof(buffer));
+  if(charReadWriteSize > 0)
+    printf("%s\n", buffer);
   /*while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
   ret = sendto(newsockfd, buffer, BUF_SIZE, 0, (struct sockaddr *) &cl_addr, len);
   if (ret < 0) {
@@ -77,7 +80,7 @@ void initClient(){
   printf("Ingrese el ip del servidor: ");
   //scanf("%s\n", ipAddr);
   ipAddr = "192.168.1.120";
-  printf("IP: %s\n", ipAddr);
+  printf("%s\n", ipAddr);
 
   servAddr.sin_family = AF_INET;
   servAddr.sin_addr.s_addr = inet_addr(ipAddr);
@@ -95,6 +98,8 @@ void initClient(){
 
   if (charReadWriteSize < 0)
     error("ERROR writing to socket");
+
+
 }
 
 int main(){
