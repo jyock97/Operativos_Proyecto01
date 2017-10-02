@@ -66,7 +66,8 @@ void initClient(){
     error("ERROR opening socket");
 
   printf("Ingrese el ip del servidor: ");
-  scanf("%s\n", ipAddr);
+  //scanf("%s\n", ipAddr);
+  ipAddr = "192.168.1.120";
   printf("IP: %s\n", ipAddr);
 
   serv_addr.sin_family = AF_INET;
