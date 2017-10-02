@@ -59,14 +59,9 @@ void initServer(){
   printf("Se realiza la conexion con el cliente: %s\n", clientIP);
   useSock = newSock;
 
-  charReadWriteSize = read(useSock, buffer, sizeof(buffer));
+  /*charReadWriteSize = read(useSock, buffer, sizeof(buffer));
   if(charReadWriteSize > 0)
     printf("%s\n", buffer);
-  /*while (fgets(buffer, sizeof(buffer), stdin) != NULL) {
-  ret = sendto(newsockfd, buffer, BUF_SIZE, 0, (struct sockaddr *) &cl_addr, len);
-  if (ret < 0) {
-   printf("Error sending data!\n");
-   exit(1);
   }*/
 }
 
@@ -92,11 +87,12 @@ void initClient(){
   useSock = sock;
   printf("Please enter the message: ");
 
-  fgets(buffer,255,stdin);
+  /*fgets(buffer,255,stdin);
   charReadWriteSize = write(sock,buffer,strlen(buffer));
 
   if (charReadWriteSize < 0)
     error("ERROR writing to socket");
+  */
 }
 
 int main(){
@@ -128,9 +124,9 @@ int main(){
   FD_ZERO(&fdList);
   FD_SET(0, &fdList);
   FD_SET(useSock, &fdList);
-  tv.tv_sec = 1;
+  tv.tv_sec = 5;
   tv.tv_usec = 0;
-  /*while (1) {
+  while (1) {
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, &tv);
     //printf("%d\n", retval);
     if(retval == 1){
@@ -146,7 +142,7 @@ int main(){
           printf("%s\n", buffer);
       }
     }
-  }*/
+  }
 
   return 0;
 }
