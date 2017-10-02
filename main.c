@@ -135,8 +135,10 @@ int main(){
       }
       if(FD_ISSET (useSock, &fdList)){
         printf("Input en socket\n");
-        if(read(useSock, buffer, sizeof(buffer)) > 0)
+        if(read(useSock, buffer, sizeof(buffer)) > 0){
+          write(useSock, "OK", 2);
           printf("%s\n", buffer);
+        }
       }
     }
   }
