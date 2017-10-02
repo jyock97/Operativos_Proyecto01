@@ -15,7 +15,7 @@ int sock, newSock, useSock;  //file descriptor del socket
 int clientLen;
 int port = 5000;             //numero del puerto
 int charReadWriteSize;
-char *ipAddr;//[16];
+char ipAddr[16];
 char clientIP[16];
 char buffer[256];
 
@@ -77,8 +77,8 @@ void initClient(){
     error("ERROR opening socket");
 
   printf("Ingrese el ip del servidor: ");
-  //scanf("%s\n", ipAddr);
-  ipAddr = "192.168.1.120";
+  fgets(buffer, sizeof(buffer), stdin);
+  strcpy(ipAddr, buffer);
   printf("%s\n", ipAddr);
 
   servAddr.sin_family = AF_INET;
@@ -93,7 +93,6 @@ void initClient(){
   printf("Please enter the message: ");
 
   fgets(buffer,255,stdin);
-  //strcpy(buffer, "HOLA MUNDO\n\n");
   charReadWriteSize = write(sock,buffer,strlen(buffer));
 
   if (charReadWriteSize < 0)
@@ -107,7 +106,7 @@ int main(){
   c = 0;
   while(c != 'S' && c != 'C'){
 
-    //system("clear");
+    system("clear");
     printf("Jugar como servidor[S] o conectarse como cliente[C]\n");
     printf("[S/C]: ");
     fgets(buffer, sizeof(buffer), stdin);
