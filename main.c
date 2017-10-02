@@ -121,12 +121,10 @@ int main(){
       break;
   }
 
+  FD_ZERO(&fdList);
   while (1) {
-
-    FD_ZERO(&fdList);
     FD_SET(0, &fdList);
     FD_SET(useSock, &fdList);
-
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, NULL);
     //printf("%d\n", retval);
     if(retval == 1){
@@ -138,11 +136,11 @@ int main(){
       if(FD_ISSET (useSock, &fdList)){
         printf("Input en socket\n");
         if(read(useSock, buffer, sizeof(buffer)) > 0){
-          write(useSock, "OK", 2);
           printf("%s\n", buffer);
         }
       }
     }
+    printf("1");
   }
 
   return 0;
