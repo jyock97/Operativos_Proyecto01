@@ -93,8 +93,9 @@ void initClient(){
   useSock = sock;
   printf("Please enter the message: ");
   //bzero(buffer,256);
-  //fgets(buffer,255,stdin);
-  strcpy(buffer, "HOLA MUNDO\n\n");
+  fflush(stdin);
+  fgets(buffer,255,stdin);
+  //strcpy(buffer, "HOLA MUNDO\n\n");
   charReadWriteSize = write(sock,buffer,strlen(buffer));
 
   if (charReadWriteSize < 0)
