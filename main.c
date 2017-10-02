@@ -57,6 +57,7 @@ void initServer(){
 
   //fflush(stdin);
   charReadWriteSize = read(newSock, buffer, sizeof(buffer));
+  if(charReadWriteSize > 0) printf("%s\n", buffer);
 }
 
 void initClient(){
