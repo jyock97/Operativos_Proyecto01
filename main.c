@@ -132,7 +132,7 @@ int main(){
   FD_SET(useSock, &fdList);
   tv.tv_sec = 1;
   tv.tv_usec = 0;
-  while (1) {
+  /*while (1) {
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, &tv);
     //printf("%d\n", retval);
     if(retval == 1){
@@ -148,7 +148,7 @@ int main(){
           printf("%s\n", buffer);
       }
     }
-  }
+  }*/
 
   return 0;
 }
