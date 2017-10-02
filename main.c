@@ -127,7 +127,7 @@ int main(){
   tv.tv_sec = 5;
   tv.tv_usec = 0;
   while (1) {
-    retval = select(FD_SETSIZE, &fdList, NULL, NULL, &tv);
+    retval = select(FD_SETSIZE, &fdList, NULL, NULL, NULL);
     //printf("%d\n", retval);
     if(retval == 1){
       printf("entro\n");
