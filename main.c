@@ -122,12 +122,14 @@ int main(){
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, &tv);
 
     if(retval == 1){
+      printf("entro\n");
       if(FD_ISSET (0, &fdList)){
-
+        printf("stdin\n");
         fgets(buffer, sizeof(buffer), stdin);
         write(useSock, buffer, sizeof(buffer));
       }
       if(FD_ISSET (useSock, &fdList)){
+        printf("socket\n");
         if(read(useSock, buffer, sizeof(buffer)) > 0)
           printf("%s\n", buffer);
       }
