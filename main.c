@@ -40,7 +40,7 @@ void initServer(){
 
   memset(&servAddr, 0, sizeof(servAddr));
   servAddr.sin_family = AF_INET;
-  servAddr.sin_addr.s_addr = htonl(INADDR_ANY);   //direccion ip de la maquina
+  servAddr.sin_addr.s_addr = INADDR_ANY;   //direccion ip de la maquina
   servAddr.sin_port = htons(port);
 
   retval = bind(sock, (struct sockaddr*) &servAddr, sizeof(servAddr));
