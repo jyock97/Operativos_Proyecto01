@@ -122,12 +122,13 @@ int main(){
       break;
   }
 
-  FD_ZERO(&fdList);
+  timeOut.tv_sec = 2;
+  timeOut.tv_usec = 0;
   while (1) {
+
+    FD_ZERO(&fdList);
     FD_SET(0, &fdList);
     FD_SET(useSock, &fdList);
-    timeOut.tv_sec = 10;
-    timeOut.tv_usec = 0;
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, &timeOut);
     //printf("%d\n", retval);
     if(retval == 1){
