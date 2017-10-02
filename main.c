@@ -55,7 +55,6 @@ void initServer(){
   if(newSock < 0)
     error("ERROR on accept");
 
-  //memset(buffer, '0', sizeof(buffer));
   inet_ntop(AF_INET, &(cliAddr.sin_addr), clientIP, sizeof(clientIP));
   printf("Se realiza la conexion con el cliente: %s\n", clientIP);
   useSock = newSock;
@@ -92,9 +91,7 @@ void initClient(){
   printf("Se realiza conexion\n");
   useSock = sock;
   printf("Please enter the message: ");
-  //bzero(buffer,256);
-  fflush(stdin);
-  fflush(stdout);
+
   fgets(buffer,255,stdin);
   //strcpy(buffer, "HOLA MUNDO\n\n");
   charReadWriteSize = write(sock,buffer,strlen(buffer));
@@ -110,10 +107,11 @@ int main(){
   c = 0;
   while(c != 'S' && c != 'C'){
 
-    system("clear");
+    //system("clear");
     printf("Jugar como servidor[S] o conectarse como cliente[C]\n");
     printf("[S/C]: ");
-    scanf("%c", &c);
+    fgets(buffer, sizeof(buffer), stdin);
+    c = buffer[0];
     c = toupper(c);
 
   }
