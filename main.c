@@ -145,6 +145,7 @@ int main(){
     if(retval == 0){
       printf("1");
     }
+    printf("2");
   }
 
   return 0;
