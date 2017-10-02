@@ -23,6 +23,7 @@ struct sockaddr_in servAddr, cliAddr; //direccion del servidor y el cliente
 struct hostent *server;
 
 int retval;
+struct timeval timeOut;
 fd_set fdList;
 
 
@@ -121,22 +122,22 @@ int main(){
       break;
   }
 
+  timeOut.tv_sec = 3;
+  timeOut.tv_usec = 0;
   FD_ZERO(&fdList);
   while (1) {
     FD_SET(0, &fdList);
     FD_SET(useSock, &fdList);
-    retval = select(FD_SETSIZE, &fdList, NULL, NULL, NULL);
+    retval = select(FD_SETSIZE, &fdList, NULL, NULL, &timeOut);
     //printf("%d\n", retval);
     if(retval == 1){
       if(FD_ISSET (0, &fdList)){
-        printf("Input en stdin\n");
         fgets(buffer, sizeof(buffer), stdin);
         write(useSock, buffer, sizeof(buffer));
       }
       if(FD_ISSET (useSock, &fdList)){
-        printf("Input en socket\n");
         if(read(useSock, buffer, sizeof(buffer)) > 0){
-          printf("%s\n", buffer);
+          printf("MSG: %s\n", buffer);
         }
       }
     }
