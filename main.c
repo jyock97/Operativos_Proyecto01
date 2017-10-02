@@ -15,7 +15,7 @@ int sock, newSock, useSock;  //file descriptor del socket
 int clientLen;
 int port = 5000;             //numero del puerto
 int charReadWriteSize;
-char ipAddr[16];
+char *ipAddr;//[16];
 char buffer[256];
 
 struct sockaddr_in serv_addr, cli_addr; //direccion del servidor y el cliente
