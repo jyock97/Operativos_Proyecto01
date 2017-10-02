@@ -24,7 +24,7 @@ struct hostent *server;
 
 int retval;
 fd_set fdList;
-struct timeval tv;
+
 
 void error(char *msg){
   perror(msg);
@@ -124,20 +124,17 @@ int main(){
   FD_ZERO(&fdList);
   FD_SET(0, &fdList);
   FD_SET(useSock, &fdList);
-  tv.tv_sec = 5;
-  tv.tv_usec = 0;
   while (1) {
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, NULL);
     //printf("%d\n", retval);
     if(retval == 1){
-      printf("entro\n");
       if(FD_ISSET (0, &fdList)){
-        printf("stdin\n");
+        printf("Input en stdin\n");
         fgets(buffer, sizeof(buffer), stdin);
         write(useSock, buffer, sizeof(buffer));
       }
       if(FD_ISSET (useSock, &fdList)){
-        printf("socket\n");
+        printf("Input en socket\n");
         if(read(useSock, buffer, sizeof(buffer)) > 0)
           printf("%s\n", buffer);
       }
