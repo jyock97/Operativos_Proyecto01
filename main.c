@@ -121,10 +121,12 @@ int main(){
       break;
   }
 
-  FD_ZERO(&fdList);
-  FD_SET(0, &fdList);
-  FD_SET(useSock, &fdList);
   while (1) {
+
+    FD_ZERO(&fdList);
+    FD_SET(0, &fdList);
+    FD_SET(useSock, &fdList);
+
     retval = select(FD_SETSIZE, &fdList, NULL, NULL, NULL);
     //printf("%d\n", retval);
     if(retval == 1){
