@@ -168,6 +168,8 @@ void *warriorController(void *arg){
     int currentY;
     int nextX;
     int nextY;
+    int currentTopTowerX;
+    int currentMidTowerX;
     struct warrior *w = arg;
 
     bDestroy = 0;
@@ -185,7 +187,14 @@ void *warriorController(void *arg){
             break;
         }
         //calcular la siguiente posicion
-        if(currentX <= TOP_TOWER_X_P1 || currentX >= TOP_TOWER_X_P2){ //si estoy antes de las primeras torres
+        if(bPlayer2){
+            currentTopTowerX = TOP_TOWER_X_P2;
+            currentMidTowerX = MID_TOWER_X_P2;
+        }else{
+            currentTopTowerX = TOP_TOWER_X_P1;
+            currentMidTowerX = MID_TOWER_X_P1;
+        }
+        if(currentX <= currentTopTowerX){ //si estoy antes de las primeras torres
             if(currentY == TOP_TOWER_Y || currentY == BOT_TOWER_Y ||
             currentY == MID_TOWER_Y || currentY == (MID_TOWER_Y + 1)){
 
@@ -202,8 +211,9 @@ void *warriorController(void *arg){
                 nextY = currentY;
             }
         }
-        else if(currentY != TOP_TOWER_Y || currentY != BOT_TOWER_Y){
+        else if(currentY != TOP_TOWER_Y && currentY != BOT_TOWER_Y){
 
+            //exit(0);
             int temp = (BOT_TOWER_Y - currentY) - (currentY - TOP_TOWER_Y);
             if(temp > 0){
                 if(TOP_TOWER_Y > currentY){
@@ -219,7 +229,7 @@ void *warriorController(void *arg){
                 }
             }
             nextX = currentX;
-        }else if(currentX != MID_TOWER_X_P1 || currentX != MID_TOWER_X_P2){
+        }else if(currentX != currentMidTowerX){
             nextX = currentX + xDirection;
             nextY = currentY;
         }else{
@@ -280,8 +290,10 @@ void selectMenu(){
     }else{
         selectedX = xMenu;
         selectedY = yMenu;
-        if(selectedX == 11 || selectedX == 14 || selectedX == 4 || selectedX == 1 &&
-        selectedY == 1 || selectedY == 3 || selectedY == 3 || selectedY == 6){
+        if(selectedX == 11 && selectedY == 1 || selectedX == 11 && selectedY == 6 ||
+        selectedX == 4 && selectedY == 1 || selectedX == 4 && selectedY == 6 ||
+        selectedX == 1 && selectedY == 3 || selectedX == 1 && selectedY == 4 ||
+        selectedX == 14 && selectedY == 3 || selectedX == 14 && selectedY == 4){
             if(bPlayer2){
                 selectedX--;
                 selectedY--;
@@ -307,7 +319,7 @@ void selectMenu(){
         field[selectedY][selectedX] -> bPlayer2 = bPlayer2;
         if(bPlayer2){
             field[selectedY][selectedX] -> orientation = '<';
-            field[selectedY][selectedX] -> direction = -1;
+            field[selectedY][selectedX] -> direction = 1;
         }else{
             field[selectedY][selectedX] -> orientation = '>';
             field[selectedY][selectedX] -> direction = 1;
