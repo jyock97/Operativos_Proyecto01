@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sched.h>
 #include "gameController.h"
 #include "netController.h"
+#include "scheduler.h"
+#include "my_thread.h"
+#include "my_mutex.h"
 
 #define ROWS    8
 #define COLUMS  16
@@ -33,7 +35,8 @@ struct warrior T3;
 
 struct warrior hand[HAND_SIZE];
 
-pthread_mutex_t fieldLock;
+
+my_mutex fieldLock;
 
 void endGame(){
     bFinishGame = 1;
@@ -51,7 +54,7 @@ void clearField(){
 }
 
 void printField(){
-    pthread_mutex_lock(&fieldLock);
+    my_mutex_lock(&fieldLock);
     for (size_t i = 0; i < ROWS; i++) {
         for (size_t j = 0; j < COLUMS; j++) {
             if(field[i][j]){
@@ -77,7 +80,7 @@ void printField(){
             printf("<");
         printf("\n\r");
     }
-    pthread_mutex_unlock(&fieldLock);
+    my_mutex_unlock(&fieldLock);
     if(cardSelection){      //Imprimir las cartas de la mano
         for (size_t i = 0; i < HAND_SIZE; i++) {
             printf("|%c%d", hand[i].type, hand[i].lvl);
@@ -147,7 +150,7 @@ void startTowers(){
 }
 
 void *gameController(){
-    pthread_mutex_init(&fieldLock, NULL);
+    my_mutex_init(&fieldLock);
     clearField();
     startHand();
     startTowers();
@@ -156,10 +159,10 @@ void *gameController(){
         printField();
         usleep(250000); //milisegundos
     }
-    pthread_mutex_destroy(&fieldLock);
+    my_thread_end();
 }
-
-void *warriorController(void *arg){
+void *arg;
+void *warriorController(){
 
     int bDestroy;
     int xDirection;
@@ -180,9 +183,9 @@ void *warriorController(void *arg){
         sleep(1);
         if(w -> life <= 0){
             bDestroy = 1;
-            pthread_mutex_lock(&fieldLock);
+            my_mutex_lock(&fieldLock);
             field[currentY][currentX] = NULL;
-            pthread_mutex_unlock(&fieldLock);
+            my_mutex_unlock(&fieldLock);
             free(w);
             break;
         }
@@ -240,8 +243,7 @@ void *warriorController(void *arg){
                 nextY = currentY - 1;
             }
         }
-        pthread_mutex_lock(&fieldLock);
-
+        my_mutex_lock(&fieldLock);
         if(field[nextY][nextX]){
             if(field[nextY][nextX] -> bPlayer2 != bPlayer2){
                 //atack
@@ -252,9 +254,9 @@ void *warriorController(void *arg){
             currentX = nextX;
             currentY = nextY;
         }
-
-        pthread_mutex_unlock(&fieldLock);
+        my_mutex_unlock(&fieldLock);
     }
+    my_thread_end();
 }
 
 void upMenu(){
@@ -302,12 +304,11 @@ void selectMenu(){
                 selectedY++;
             }
         }
-        pthread_t *pWarr = malloc(sizeof(pthread_t));
-        pthread_mutex_lock(&fieldLock);
+        my_mutex_lock(&fieldLock);
         while(field[selectedY][selectedX]){
-            pthread_mutex_unlock(&fieldLock);
-            sched_yield();
-            pthread_mutex_lock(&fieldLock);
+            my_mutex_unlock(&fieldLock);
+            my_thread_yield();
+            my_mutex_lock(&fieldLock);
         }
         field[selectedY][selectedX] = calloc(1, sizeof(struct warrior));
         field[selectedY][selectedX] -> type = hand[selectedCard].type;
@@ -324,9 +325,9 @@ void selectMenu(){
             field[selectedY][selectedX] -> orientation = '>';
             field[selectedY][selectedX] -> direction = 1;
         }
-        pthread_mutex_unlock(&fieldLock);
-        pthread_create(pWarr, NULL, warriorController, (void *) field[selectedY][selectedX]);
-
+        my_mutex_unlock(&fieldLock);
+        arg = field[selectedY][selectedX];
+        my_thread_create(warriorController,1,1);
     }
     cardSelection++;
     cardSelection %= 2;

@@ -11,7 +11,7 @@
 
 #define NUMTHREADS 10
 #define STACKSIZE 4096
-#define INTERVAL 500
+#define INTERVAL 100
 
 sigset_t set;
 ucontext_t signal_context;
