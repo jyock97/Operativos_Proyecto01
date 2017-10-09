@@ -5,6 +5,6 @@ void makeConnection();
 
 void *netController();
 
-void sedMessage();
+void sedMessage(char *msg);
 
 #endif

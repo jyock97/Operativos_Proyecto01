@@ -15,7 +15,7 @@
 #define MID_TOWER_X_P1 1
 #define MID_TOWER_X_P2 14
 #define MID_TOWER_Y 3
-
+#define MSG_LEN 9
 
 int cardSelection = 1;
 int xMenu = 0;
@@ -23,8 +23,9 @@ int yMenu = 0;
 int selectedCard;
 int selectedX;
 int selectedY;
-int bPlayer2 = 1;
+int bPlayer2 = 0;
 int bFinishGame = 0;
+char *msg;
 struct warrior *field[ROWS][COLUMS]; //se debe cambiar esto para que se guarde la referencia el luchador o la torre
 
 struct warrior T1; //{type, lvl, life, atack, direction, x, y, size, pWarrior}
@@ -105,8 +106,8 @@ void printField(){
 
 void nextWarrior(struct warrior *warr){
     warr -> type = 'A';
-    warr -> life = 5;
-    warr -> atack = 5;
+    warr -> life = 25;
+    warr -> atack = 15;
     warr -> direction = -1;
 }
 
@@ -151,6 +152,7 @@ void *gameController(){
     clearField();
     startHand();
     startTowers();
+    msg = calloc(MSG_LEN, sizeof(char));
     while (!bFinishGame) {
         system("clear");
         printField();
@@ -159,9 +161,11 @@ void *gameController(){
     pthread_mutex_destroy(&fieldLock);
 }
 
+
 void *warriorController(void *arg){
 
     int bDestroy;
+    int bEnemy;
     int xDirection;
     int yDirection;
     int currentX;
@@ -169,13 +173,20 @@ void *warriorController(void *arg){
     int nextX;
     int nextY;
     int currentTopTowerX;
-    int currentMidTowerX;
+    int enemyMidTowerX;
     struct warrior *w = arg;
 
     bDestroy = 0;
     xDirection = w -> direction;
     currentX = w -> x;
     currentY = w -> y;
+
+    if(w -> bPlayer2){
+        enemyMidTowerX = MID_TOWER_X_P2;
+    }else{
+        enemyMidTowerX = MID_TOWER_X_P1;
+    }
+
     while(!bDestroy){
         sleep(1);
         if(w -> life <= 0){
@@ -187,64 +198,77 @@ void *warriorController(void *arg){
             break;
         }
         //calcular la siguiente posicion
-        if(bPlayer2){
-            currentTopTowerX = TOP_TOWER_X_P2;
-            currentMidTowerX = MID_TOWER_X_P2;
-        }else{
-            currentTopTowerX = TOP_TOWER_X_P1;
-            currentMidTowerX = MID_TOWER_X_P1;
-        }
-        if(currentX <= currentTopTowerX){ //si estoy antes de las primeras torres
-            if(currentY == TOP_TOWER_Y || currentY == BOT_TOWER_Y ||
-            currentY == MID_TOWER_Y || currentY == (MID_TOWER_Y + 1)){
+        if(bPlayer2 != w -> bPlayer2)
+            bEnemy = 1;
 
+        if(!bEnemy){
+            if(bPlayer2? currentX >= TOP_TOWER_X_P2 : currentX <= TOP_TOWER_X_P1){ //si estoy antes de las primeras torres
+                if(currentY == TOP_TOWER_Y || currentY == BOT_TOWER_Y ||
+                currentY == MID_TOWER_Y || currentY == (MID_TOWER_Y + 1)){
+                    int temp = (BOT_TOWER_Y - currentY) - (currentY - TOP_TOWER_Y);
+                    if(temp > 0){
+                        nextY = currentY - 1;
+                    }else{
+                        nextY = currentY + 1;
+                    }
+                    nextX = currentX;
+
+                }else{
+                    nextX = currentX + xDirection;
+                    nextY = currentY;
+                }
+            }
+            else if(currentY != TOP_TOWER_Y && currentY != BOT_TOWER_Y){
+                //exit(0);
                 int temp = (BOT_TOWER_Y - currentY) - (currentY - TOP_TOWER_Y);
                 if(temp > 0){
-                    nextY = currentY - 1;
+                    if(TOP_TOWER_Y > currentY){
+                        nextY = currentY + 1;
+                    }else{
+                        nextY = currentY - 1;
+                    }
                 }else{
-                    nextY = currentY + 1;
+                    if(BOT_TOWER_Y > currentY){
+                        nextY = currentY + 1;
+                    }else{
+                        nextY = currentY - 1;
+                    }
                 }
                 nextX = currentX;
-
             }else{
                 nextX = currentX + xDirection;
                 nextY = currentY;
             }
-        }
-        else if(currentY != TOP_TOWER_Y && currentY != BOT_TOWER_Y){
-
-            //exit(0);
-            int temp = (BOT_TOWER_Y - currentY) - (currentY - TOP_TOWER_Y);
-            if(temp > 0){
-                if(TOP_TOWER_Y > currentY){
-                    nextY = currentY + 1;
-                }else{
-                    nextY = currentY - 1;
-                }
-            }else{
-                if(BOT_TOWER_Y > currentY){
-                    nextY = currentY + 1;
-                }else{
-                    nextY = currentY - 1;
-                }
-            }
-            nextX = currentX;
-        }else if(currentX != currentMidTowerX){
-            nextX = currentX + xDirection;
-            nextY = currentY;
         }else{
-            nextX = currentX;
-            if(MID_TOWER_Y > currentY){
-                nextY = currentY + 1;
+            if((bPlayer2)? currentX < MID_TOWER_X_P2 : currentX > MID_TOWER_X_P1){
+                nextX = currentX + xDirection;
+                nextY = currentY;
             }else{
-                nextY = currentY - 1;
+                nextX = currentX;
+                if(MID_TOWER_Y > currentY){
+                    nextY = currentY + 1;
+                }else{
+                    nextY = currentY - 1;
+                }
             }
         }
         pthread_mutex_lock(&fieldLock);
 
-        if(field[nextY][nextX]){
+        if(nextX < 0 || nextX > COLUMS - 1){
+            field[currentY][currentX] = NULL;
+            msg[0] = 'C';
+            msg[1] = w -> type;
+            msg[2] = w -> lvl + '0';
+            msg[3] = (w -> life / 10) + '0';
+            msg[4] = (w -> life % 10) + '0';
+            msg[5] = (w -> atack / 10) + '0';
+            msg[6] = (w -> atack % 10) + '0';
+            msg[7] = currentY + '0';
+            msg[8] = 0;
+            sedMessage(msg); //FUNCION|typo|lvl|life|atack|y
+        }else if(field[nextY][nextX]){
             if(field[nextY][nextX] -> bPlayer2 != bPlayer2){
-                //atack
+                field[nextY][nextX] -> life -= w -> atack;
             }
         }else{
             field[currentY][currentX] = NULL;
@@ -319,7 +343,7 @@ void selectMenu(){
         field[selectedY][selectedX] -> bPlayer2 = bPlayer2;
         if(bPlayer2){
             field[selectedY][selectedX] -> orientation = '<';
-            field[selectedY][selectedX] -> direction = 1;
+            field[selectedY][selectedX] -> direction = -1;
         }else{
             field[selectedY][selectedX] -> orientation = '>';
             field[selectedY][selectedX] -> direction = 1;
