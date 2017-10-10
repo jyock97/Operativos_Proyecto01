@@ -148,7 +148,7 @@ void *netController(){
 }
 
 void sedMessage(char *msg) {
-    //write(useSock, buffer, sizeof(buffer));
+    write(useSock, msg, strlen(msg));
     printf("%s\n", msg);
     exit(0);
 }
