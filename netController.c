@@ -143,6 +143,7 @@ void *netController(){
         useSock = 4;
         if(read(useSock, buffer, sizeof(buffer)) > 0){
             printf("\nMSG: %s\n", buffer);
+            exit(0);
         }
     }
 }
