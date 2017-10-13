@@ -1,5 +1,12 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sched.h>
+#include "netController.h"
+#include "genetico.h"
 
 #define ROWS    8
 #define COLUMS  16
@@ -15,6 +22,7 @@
 
 struct warrior{
     char type;
+    int intType;
     char orientation;
     int lvl;
     int life;

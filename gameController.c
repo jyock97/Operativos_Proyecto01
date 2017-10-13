@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sched.h>
-#include <pthread.h>
 #include "gameController.h"
-#include "netController.h"
 
 int cardSelection = 1;
 int xMenu = 0;
@@ -94,16 +88,18 @@ void printField(){
 }
 
 void nextWarrior(struct warrior *warr){
+    warr = setNewWarrior(shed[0]);
     warr -> type = 'A';
-    warr -> life = 25;
-    warr -> attack = 15;
     warr -> direction = -1;
+    warr -> lvl = (warr -> atack+warr -> life)/20;
 }
 
 void startHand(){
-    for (size_t i = 0; i < HAND_SIZE; i++) {
+    initShed();
+    for (int i = 0; i < HAND_SIZE; i++) {
         nextWarrior(&hand[i]);
     }
+
 }
 
 void startTowers(){
@@ -171,10 +167,12 @@ void *warriorController(void *arg){
     while(!bDestroy){
         sleep(1);
         if(w -> life <= 0){
+            bDestroy = 1;
+            addWarrior(w->intType, w);
             pthread_mutex_lock(&fieldLock);
             field[currentY][currentX] = NULL;
             pthread_mutex_unlock(&fieldLock);
-            free(w);
+            //free(w);
             break;
         }
         //calcular la siguiente posicion
