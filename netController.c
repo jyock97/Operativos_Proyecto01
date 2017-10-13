@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include "netController.h"
+#include "gameController.h"
 
 
 int sock, newSock, useSock;  //file descriptor del socket
@@ -18,7 +19,7 @@ int port = 5000;             //numero del puerto
 int charReadWriteSize;
 char ipAddr[16];
 char clientIP[16];
-char buffer[256];
+char buffer[10];
 
 struct sockaddr_in servAddr, cliAddr; //direccion del servidor y el cliente
 struct hostent *server;
@@ -62,6 +63,7 @@ void initServer(){
     inet_ntop(AF_INET, &(cliAddr.sin_addr), clientIP, sizeof(clientIP));
     printf("Se realiza la conexion con el cliente: %s\n", clientIP);
     useSock = newSock;
+    setBPlayer2(0);
 }
 
 void initClient(){
@@ -84,6 +86,7 @@ void initClient(){
 
     printf("Se realiza conexion\n");
     useSock = sock;
+    setBPlayer2(1);
 }
 
 void makeConnection(){
@@ -139,17 +142,42 @@ void makeConnection(){
 }
 
 void *netController(){
+    int cont = 0;
+    char function;
+    char type;
+    int lvl;
+    int life;
+    int attack;
+    int x, y;
+    int bPlayer2;
     while(1){
-        useSock = 4;
         if(read(useSock, buffer, sizeof(buffer)) > 0){
-            printf("\nMSG: %s\n", buffer);
-            exit(0);
+            //FUNCION|typo|lvl|life|attack|y|bPlayer2
+            if(buffer[0] == 'C'){
+                type = buffer[1];
+                lvl = buffer[2] - '0';
+                life = buffer[3] -'0';
+                life *= 10;
+                life += buffer[4] - '0';
+                attack = buffer[5] -'0';
+                attack *= 10;
+                attack += buffer[6] - '0';
+                y = buffer[7] - '0';
+                bPlayer2 = buffer[8] - '0';
+                if(bPlayer2)
+                    x = COLUMS-1;
+                else
+                    x = 0;
+                spawnWarrior(type, lvl, life, attack, x, y, bPlayer2);
+                //char type, int lvl, int life, int attack, int x, int y, int bPlayer2
+                cont++;
+                if(cont>10)
+                    exit(0);
+            }
         }
     }
 }
 
 void sedMessage(char *msg) {
     write(useSock, msg, strlen(msg));
-    printf("%s\n", msg);
-    exit(0);
 }

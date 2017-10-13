@@ -2,20 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sched.h>
+#include <pthread.h>
 #include "gameController.h"
 #include "netController.h"
-
-#define ROWS    8
-#define COLUMS  16
-#define HAND_SIZE 8
-#define TOP_TOWER_Y 1
-#define BOT_TOWER_Y 6
-#define TOP_TOWER_X_P1 4
-#define TOP_TOWER_X_P2 11
-#define MID_TOWER_X_P1 1
-#define MID_TOWER_X_P2 14
-#define MID_TOWER_Y 3
-#define MSG_LEN 9
 
 int cardSelection = 1;
 int xMenu = 0;
@@ -28,9 +17,9 @@ int bFinishGame = 0;
 char *msg;
 struct warrior *field[ROWS][COLUMS]; //se debe cambiar esto para que se guarde la referencia el luchador o la torre
 
-struct warrior T1; //{type, lvl, life, atack, direction, x, y, size, pWarrior}
-struct warrior T2;
-struct warrior T3;
+struct warrior *T1; //{type, lvl, life, attack, direction, x, y, size, pWarrior}
+struct warrior *T2;
+struct warrior *T3;
 
 struct warrior hand[HAND_SIZE];
 
@@ -89,7 +78,7 @@ void printField(){
         }
         printf("| Vida\r\n");
         for (size_t i = 0; i < HAND_SIZE; i++) {
-            printf("|%c%c", (hand[i].atack / 10) + '0', (hand[i].atack % 10) + '0');
+            printf("|%c%c", (hand[i].attack / 10) + '0', (hand[i].attack % 10) + '0');
         }
         printf("| Ataque\r\n");
     }
@@ -107,24 +96,20 @@ void printField(){
 void nextWarrior(struct warrior *warr){
     warr -> type = 'A';
     warr -> life = 25;
-    warr -> atack = 15;
+    warr -> attack = 15;
     warr -> direction = -1;
 }
 
 void startHand(){
     for (size_t i = 0; i < HAND_SIZE; i++) {
         nextWarrior(&hand[i]);
-        // printf("%d, %d, %d\n", hand[i].life, hand[i].atack, hand[i].direction);
-        // exit(0);
     }
 }
 
-
-
 void startTowers(){
-    struct warrior *T1 = calloc(1, sizeof(struct warrior));
-    struct warrior *T2 = calloc(1, sizeof(struct warrior));
-    struct warrior *T3 = calloc(1, sizeof(struct warrior));
+    T1 = calloc(1, sizeof(struct warrior));
+    T2 = calloc(1, sizeof(struct warrior));
+    T3 = calloc(1, sizeof(struct warrior));
     T1 -> bPlayer2 = bPlayer2;
     T2 -> bPlayer2 = bPlayer2;
     T3 -> bPlayer2 = bPlayer2;
@@ -146,6 +131,7 @@ void startTowers(){
         field[6][4] = T3;
     }
 }
+
 
 void *gameController(){
     pthread_mutex_init(&fieldLock, NULL);
@@ -172,8 +158,6 @@ void *warriorController(void *arg){
     int currentY;
     int nextX;
     int nextY;
-    int currentTopTowerX;
-    int enemyMidTowerX;
     struct warrior *w = arg;
 
     bDestroy = 0;
@@ -181,16 +165,12 @@ void *warriorController(void *arg){
     currentX = w -> x;
     currentY = w -> y;
 
-    if(w -> bPlayer2){
-        enemyMidTowerX = MID_TOWER_X_P2;
-    }else{
-        enemyMidTowerX = MID_TOWER_X_P1;
-    }
+    if(bPlayer2 != w -> bPlayer2)
+    bEnemy = 1;
 
     while(!bDestroy){
         sleep(1);
         if(w -> life <= 0){
-            bDestroy = 1;
             pthread_mutex_lock(&fieldLock);
             field[currentY][currentX] = NULL;
             pthread_mutex_unlock(&fieldLock);
@@ -198,8 +178,6 @@ void *warriorController(void *arg){
             break;
         }
         //calcular la siguiente posicion
-        if(bPlayer2 != w -> bPlayer2)
-            bEnemy = 1;
 
         if(!bEnemy){
             if(bPlayer2? currentX >= TOP_TOWER_X_P2 : currentX <= TOP_TOWER_X_P1){ //si estoy antes de las primeras torres
@@ -219,7 +197,6 @@ void *warriorController(void *arg){
                 }
             }
             else if(currentY != TOP_TOWER_Y && currentY != BOT_TOWER_Y){
-                //exit(0);
                 int temp = (BOT_TOWER_Y - currentY) - (currentY - TOP_TOWER_Y);
                 if(temp > 0){
                     if(TOP_TOWER_Y > currentY){
@@ -261,14 +238,24 @@ void *warriorController(void *arg){
             msg[2] = w -> lvl + '0';
             msg[3] = (w -> life / 10) + '0';
             msg[4] = (w -> life % 10) + '0';
-            msg[5] = (w -> atack / 10) + '0';
-            msg[6] = (w -> atack % 10) + '0';
+            msg[5] = (w -> attack / 10) + '0';
+            msg[6] = (w -> attack % 10) + '0';
             msg[7] = currentY + '0';
-            msg[8] = 0;
-            sedMessage(msg); //FUNCION|typo|lvl|life|atack|y
+            msg[8] = bPlayer2 + '0';
+            msg[9] = 0;
+            sedMessage(msg); //FUNCION|typo|lvl|life|attack|y|bPlayer2
+            bDestroy = 1;
+            field[currentY][currentX] = NULL;
+
         }else if(field[nextY][nextX]){
-            if(field[nextY][nextX] -> bPlayer2 != bPlayer2){
-                field[nextY][nextX] -> life -= w -> atack;
+            if(field[nextY][nextX] -> bPlayer2 != w -> bPlayer2){
+                field[nextY][nextX] -> life -= w -> attack;
+                if(field[nextY][nextX] < 0)
+                    field[nextY][nextX] = 0;
+                if(field[nextY][nextX] -> type == 'T'){
+                    free(field[nextY][nextX]);
+                    field[nextY][nextX] = NULL;
+                }
             }
         }else{
             field[currentY][currentX] = NULL;
@@ -279,6 +266,35 @@ void *warriorController(void *arg){
 
         pthread_mutex_unlock(&fieldLock);
     }
+}
+
+void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2){
+
+    pthread_t *pWarr = malloc(sizeof(pthread_t));
+    pthread_mutex_lock(&fieldLock);
+    while(field[y][x]){
+        pthread_mutex_unlock(&fieldLock);
+        sched_yield();
+        pthread_mutex_lock(&fieldLock);
+    }
+
+    field[y][x] = calloc(1, sizeof(struct warrior));
+    field[y][x] -> type = type;
+    field[y][x] -> lvl = lvl;
+    field[y][x] -> life = life;
+    field[y][x] -> attack = attack;
+    field[y][x] -> x = x;
+    field[y][x] -> y = y;
+    field[y][x] -> bPlayer2 = bPlayer2;
+    if(bPlayer2){
+        field[y][x] -> orientation = '<';
+        field[y][x] -> direction = -1;
+    }else{
+        field[y][x] -> orientation = '>';
+        field[y][x] -> direction = 1;
+    }
+    pthread_mutex_unlock(&fieldLock);
+    pthread_create(pWarr, NULL, warriorController, (void *) field[y][x]);
 }
 
 void upMenu(){
@@ -326,30 +342,15 @@ void selectMenu(){
                 selectedY++;
             }
         }
-        pthread_t *pWarr = malloc(sizeof(pthread_t));
-        pthread_mutex_lock(&fieldLock);
-        while(field[selectedY][selectedX]){
-            pthread_mutex_unlock(&fieldLock);
-            sched_yield();
-            pthread_mutex_lock(&fieldLock);
-        }
-        field[selectedY][selectedX] = calloc(1, sizeof(struct warrior));
-        field[selectedY][selectedX] -> type = hand[selectedCard].type;
-        field[selectedY][selectedX] -> lvl = hand[selectedCard].lvl;
-        field[selectedY][selectedX] -> life = hand[selectedCard].life;
-        field[selectedY][selectedX] -> atack = hand[selectedCard].atack;
-        field[selectedY][selectedX] -> x = selectedX;
-        field[selectedY][selectedX] -> y = selectedY;
-        field[selectedY][selectedX] -> bPlayer2 = bPlayer2;
-        if(bPlayer2){
-            field[selectedY][selectedX] -> orientation = '<';
-            field[selectedY][selectedX] -> direction = -1;
-        }else{
-            field[selectedY][selectedX] -> orientation = '>';
-            field[selectedY][selectedX] -> direction = 1;
-        }
-        pthread_mutex_unlock(&fieldLock);
-        pthread_create(pWarr, NULL, warriorController, (void *) field[selectedY][selectedX]);
+        char type = hand[selectedCard].type;
+        int lvl = hand[selectedCard].lvl;
+        int life = hand[selectedCard].life;
+        int attack = hand[selectedCard].attack;
+        int x = selectedX;
+        int y = selectedY;
+
+        nextWarrior(&hand[selectedCard]);
+        spawnWarrior(type, lvl, life, attack, x, y, bPlayer2);
 
     }
     cardSelection++;

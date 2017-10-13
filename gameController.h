@@ -1,24 +1,34 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
-#include <pthread.h>
+
+#define ROWS    8
+#define COLUMS  16
+#define HAND_SIZE 8
+#define TOP_TOWER_Y 1
+#define BOT_TOWER_Y 6
+#define TOP_TOWER_X_P1 4
+#define TOP_TOWER_X_P2 11
+#define MID_TOWER_X_P1 1
+#define MID_TOWER_X_P2 14
+#define MID_TOWER_Y 3
+#define MSG_LEN 10
 
 struct warrior{
     char type;
     char orientation;
     int lvl;
     int life;
-    int atack;
+    int attack;
     int direction;
     int x, y;
     int bPlayer2;
     //int size;
-    pthread_t pWarrior;
     //int scheduler;
 };
 
 void setBPlayer2(int b);
 void *gameController();
-
+void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2);
 void upMenu();
 void downMenu();
 void leftMenu();
