@@ -1,9 +1,14 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
 #include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sched.h>
 
 struct warrior{
     char type;
+    int intType;
     char orientation;
     int lvl;
     int life;

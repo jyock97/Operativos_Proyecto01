@@ -5,6 +5,7 @@
 #include <string.h>
 #include "netController.h"
 #include "gameController.h"
+#include "genetico.h"
 
 int main(){
 
@@ -18,7 +19,6 @@ int main(){
 
     pthread_create(&pGameController, NULL, gameController, NULL);
     //pthread_create(&pNetController, NULL, netController, NULL);
-
 
     system ("/bin/stty raw"); //no esperar al enter para leer
     read(0, buffer, 2);

@@ -1,9 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sched.h>
 #include "gameController.h"
 #include "netController.h"
+#include "genetico.h"
 
 #define ROWS    8
 #define COLUMS  16
@@ -105,18 +102,20 @@ void printField(){
 }
 
 void nextWarrior(struct warrior *warr){
+    warr = setNewWarrior(shed[0]);
     warr -> type = 'A';
-    warr -> life = 25;
-    warr -> atack = 15;
     warr -> direction = -1;
+    warr -> lvl = (warr -> atack+warr -> life)/20;
 }
 
 void startHand(){
-    for (size_t i = 0; i < HAND_SIZE; i++) {
+    initShed();
+    for (int i = 0; i < HAND_SIZE; i++) {
         nextWarrior(&hand[i]);
-        // printf("%d, %d, %d\n", hand[i].life, hand[i].atack, hand[i].direction);
+        //printf("%d, %d, %d\n", hand[i].life, hand[i].atack, hand[i].direction);
         // exit(0);
     }
+
 }
 
 
@@ -191,10 +190,11 @@ void *warriorController(void *arg){
         sleep(1);
         if(w -> life <= 0){
             bDestroy = 1;
+            addWarrior(w->intType, w);
             pthread_mutex_lock(&fieldLock);
             field[currentY][currentX] = NULL;
             pthread_mutex_unlock(&fieldLock);
-            free(w);
+            //free(w);
             break;
         }
         //calcular la siguiente posicion
@@ -350,6 +350,7 @@ void selectMenu(){
         }
         pthread_mutex_unlock(&fieldLock);
         pthread_create(pWarr, NULL, warriorController, (void *) field[selectedY][selectedX]);
+        nextWarrior(&hand[selectedCard]);
 
     }
     cardSelection++;
