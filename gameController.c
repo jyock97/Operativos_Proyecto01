@@ -54,7 +54,15 @@ void printField(){
             if(!field[i][j]){
                 printf("__");
             }else{
-                printf("%c%c", (field[i][j] -> life / 10) + '0', (field[i][j] -> life % 10) + '0');
+                if(field[i][j] -> life>99){
+                    printf("99");
+                }else{
+                    if(field[i][j] -> life<10){
+                        printf("0%d",(field[i][j] -> life));
+                    }else{
+                        printf("%d", (field[i][j] -> life));
+                    }
+                }
             }
         }
         if(i == yMenu)
@@ -68,11 +76,27 @@ void printField(){
         }
         printf("| Tipo, Nivel\r\n");
         for (size_t i = 0; i < HAND_SIZE; i++) {
-            printf("|%c%c", (hand[i].life / 10) + '0', (hand[i].life % 10) + '0');
+            if(hand[i].life>99){
+                printf("|99");
+            }else{
+                if(hand[i].life<10){
+                    printf("|0%d",hand[i].life);
+                }else{
+                    printf("|%d", (hand[i].life));
+                }
+            }
         }
         printf("| Vida\r\n");
         for (size_t i = 0; i < HAND_SIZE; i++) {
-            printf("|%c%c", (hand[i].attack / 10) + '0', (hand[i].attack % 10) + '0');
+            if(hand[i].attack>99){
+                printf("|99");
+            }else{
+                if(hand[i].attack<10){
+                    printf("|0%d",(hand[i].attack));
+                }else{
+                    printf("|%d", (hand[i].attack));
+                }
+            }
         }
         printf("| Ataque\r\n");
     }
@@ -88,10 +112,11 @@ void printField(){
 }
 
 void nextWarrior(struct warrior *warr){
-    warr = setNewWarrior(shed[0]);
-    warr -> type = 'A';
+    srand(time(NULL));
+    int pos = rand()%10;
+    warr = setNewWarrior(shed[pos]);
+    warr -> type = pos+'A';
     warr -> direction = -1;
-    warr -> lvl = (warr -> atack+warr -> life)/20;
 }
 
 void startHand(){

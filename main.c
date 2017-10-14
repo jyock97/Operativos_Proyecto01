@@ -15,10 +15,10 @@ int main(){
     pthread_t pNetController;
 
 
-    makeConnection();
+    //makeConnection();
 
     pthread_create(&pGameController, NULL, gameController, NULL);
-    pthread_create(&pNetController, NULL, netController, NULL);
+    //pthread_create(&pNetController, NULL, netController, NULL);
 
     system ("/bin/stty raw"); //no esperar al enter para leer
     read(0, buffer, 2);
