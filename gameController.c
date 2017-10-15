@@ -15,7 +15,7 @@ struct warrior *T1; //{type, lvl, life, attack, direction, x, y, size, pWarrior}
 struct warrior *T2;
 struct warrior *T3;
 
-struct warrior hand[HAND_SIZE];
+struct warrior *hand[HAND_SIZE];
 
 pthread_mutex_t fieldLock;
 
@@ -72,29 +72,29 @@ void printField(){
     pthread_mutex_unlock(&fieldLock);
     if(cardSelection){      //Imprimir las cartas de la mano
         for (size_t i = 0; i < HAND_SIZE; i++) {
-            printf("|%c%d", hand[i].type, hand[i].lvl);
+            printf("|%c%d", hand[i] -> type, hand[i] -> lvl);
         }
         printf("| Tipo, Nivel\r\n");
         for (size_t i = 0; i < HAND_SIZE; i++) {
-            if(hand[i].life>99){
+            if(hand[i] -> life>99){
                 printf("|99");
             }else{
-                if(hand[i].life<10){
-                    printf("|0%d",hand[i].life);
+                if(hand[i] -> life<10){
+                    printf("|0%d",hand[i] -> life);
                 }else{
-                    printf("|%d", (hand[i].life));
+                    printf("|%d", (hand[i] -> life));
                 }
             }
         }
         printf("| Vida\r\n");
         for (size_t i = 0; i < HAND_SIZE; i++) {
-            if(hand[i].attack>99){
+            if(hand[i] -> attack>99){
                 printf("|99");
             }else{
-                if(hand[i].attack<10){
-                    printf("|0%d",(hand[i].attack));
+                if(hand[i] -> attack<10){
+                    printf("|0%d",(hand[i] -> attack));
                 }else{
-                    printf("|%d", (hand[i].attack));
+                    printf("|%d", (hand[i] -> attack));
                 }
             }
         }
@@ -114,17 +114,26 @@ void printField(){
 void nextWarrior(struct warrior *warr){
     srand(time(NULL));
     int pos = rand()%10;
-    warr = setNewWarrior(shed[pos]);
-    warr -> type = pos+'A';
-    warr -> direction = -1;
+    struct warrior *tempWarrior = setNewWarrior(shed[pos]);
+    warr -> type = pos + 'A';
+    warr -> intType = tempWarrior -> intType;
+    warr -> lvl = tempWarrior -> lvl;
+    warr -> life = tempWarrior -> life;
+    warr -> attack = tempWarrior -> attack;
+    printf("%c %d %d\n", warr -> type, warr -> life, warr -> attack);
 }
 
 void startHand(){
     initShed();
     for (int i = 0; i < HAND_SIZE; i++) {
-        nextWarrior(&hand[i]);
+        hand[i] = calloc(1, sizeof(struct warrior));
+        nextWarrior(hand[i]);
+        printf("%c %d %d\n", hand[i] -> type, hand[i] -> life, hand[i] -> attack);
     }
-
+    for(int i = 0; i < HAND_SIZE; i++){
+        printf("%c %d %d\n", hand[i] -> type, hand[i] -> life, hand[i] -> attack);
+        printf("---\n");
+    }exit(0);
 }
 
 void startTowers(){
@@ -365,14 +374,14 @@ void selectMenu(){
                 selectedY++;
             }
         }
-        char type = hand[selectedCard].type;
-        int lvl = hand[selectedCard].lvl;
-        int life = hand[selectedCard].life;
-        int attack = hand[selectedCard].attack;
+        char type = hand[selectedCard] -> type;
+        int lvl = hand[selectedCard] -> lvl;
+        int life = hand[selectedCard] -> life;
+        int attack = hand[selectedCard] -> attack;
         int x = selectedX;
         int y = selectedY;
 
-        nextWarrior(&hand[selectedCard]);
+        nextWarrior(hand[selectedCard]);
         spawnWarrior(type, lvl, life, attack, x, y, bPlayer2);
 
     }

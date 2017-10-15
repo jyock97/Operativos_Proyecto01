@@ -31,8 +31,6 @@ struct warrior{
     int direction;
     int x, y;
     int bPlayer2;
-    //int size;
-    //int scheduler;
 };
 
 void setBPlayer2(int b);

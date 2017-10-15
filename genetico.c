@@ -66,15 +66,15 @@ struct warrior *setNewWarrior(struct warrior **poblacion){
 }
 
 void initShed(){
-    struct warrior *primer = malloc(sizeof(struct warrior));
-    struct warrior *segundo = malloc(sizeof(struct warrior));
-    primer->life = 5;
-    primer->attack = 10;
-    segundo->life = 8;
-    segundo->attack = 6;
+
     for(int i = 0;i<10;i++){
         position[i] = 0;         //esto siempre inicia como 0
-        shed[i][0] = primer;
-        shed[i][1] = segundo;
+        shed[i][0] = malloc(sizeof(struct warrior));
+        shed[i][0] -> life = 20;
+        shed[i][0] -> attack = 5;
+
+        shed[i][1] = malloc(sizeof(struct warrior));
+        shed[i][1] -> life = 30;
+        shed[i][1] -> attack = 3;
     }
 }
