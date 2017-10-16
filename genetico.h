@@ -13,6 +13,6 @@ void addWarrior(int index, struct warrior *new);
 
 struct warrior *setNewWarrior(struct warrior **poblacion);
 
-void initShed();
+void initShed(char *iniFile);
 
 #endif

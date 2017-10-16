@@ -66,24 +66,63 @@ struct warrior *setNewWarrior(struct warrior **poblacion){
     //     poblacion[pos]->lvl = 9;
     // return poblacion[pos];
     int type = rand()%10;
-    w -> life = rand()%100;
-    w -> attack = rand()%50;
     w -> type = type + 'A';
     w -> intType = type;
     w -> lvl = rand()%10;
+    w -> life = rand()%100;
+    w -> attack = rand()%50;
     return w;
 }
 
-void initShed(){
-    w = calloc(1, sizeof(struct warrior));
-    for(int i = 0;i<10;i++){
-        position[i] = 0;         //esto siempre inicia como 0
-        shed[i][0] = malloc(sizeof(struct warrior));
-        shed[i][0] -> life = 20;
-        shed[i][0] -> attack = 5;
+void initShed(char *iniFile){
 
-        shed[i][1] = malloc(sizeof(struct warrior));
-        shed[i][1] -> life = 30;
-        shed[i][1] -> attack = 3;
+    char ss[256], *temp;
+    int bWarrior;
+    int life, attack;
+    int i;
+
+    w = calloc(1, sizeof(struct warrior)); //se utiliza en el algoritmo genetico
+
+    FILE *f = fopen(iniFile, "r");
+    bWarrior = 0;
+    while(!bWarrior && fgets(ss, sizeof(ss), f) != NULL){
+        if(memcmp(ss, "[warriors]", strlen("[warriors]")) == 0)
+            bWarrior = 1;
     }
+
+    i = 0;
+    while(fgets(ss, sizeof(ss), f) != NULL) {
+        if(ss[0] == '[')
+            break;
+        if(ss[0] == '#')
+            continue;
+        temp = strchr(ss, '=');
+        if(temp == NULL)
+            life = 0;
+        else
+            life = atoi(temp+1);
+
+        fgets(ss, sizeof(ss), f);
+        while(ss[0] == '#'){
+            fgets(ss, sizeof(ss), f);
+        }
+        temp = strchr(ss, '=');
+        if(temp == NULL)
+            attack = 0;
+        else
+            attack = atoi(temp+1);
+
+        position[i] = 0;
+        shed[i][0] = calloc(1, sizeof(struct warrior));
+        shed[i][0] -> life = life;
+        shed[i][0] -> attack = attack;
+        shed[i][1] = calloc(1, sizeof(struct warrior));
+        shed[i][1] -> life = life;
+        shed[i][1] -> attack = attack;
+        i++;
+    }
+    fclose(f);
+    for (int i = 0; i < 10; i++) {
+    }
+
 }

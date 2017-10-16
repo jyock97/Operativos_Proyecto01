@@ -5,4 +5,4 @@ all:
 	gcc $(H_FILES) $(C_FILES) -lpthread -o tecRoyale
 
 run:
-	./tecRoyale
+	./tecRoyale game.ini

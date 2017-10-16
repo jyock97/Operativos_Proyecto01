@@ -7,20 +7,29 @@
 #include "gameController.h"
 #include "genetico.h"
 
-int main(){
+int main(int argc, char *argv[]){
 
     char buffer[2];
+    char *iniFile;
+
+    if(argc < 2){
+        printf("Se necesita un archivo de inicio\n");
+        exit(0);
+    }
+    iniFile = argv[1];
+    initShed(iniFile);
+
 
     srand(time(NULL));
-    
+
     pthread_t pGameController;
     pthread_t pNetController;
 
 
-    //makeConnection();
+    makeConnection();
 
     pthread_create(&pGameController, NULL, gameController, NULL);
-    //pthread_create(&pNetController, NULL, netController, NULL);
+    pthread_create(&pNetController, NULL, netController, NULL);
 
     system ("/bin/stty raw"); //no esperar al enter para leer
     read(0, buffer, 2);

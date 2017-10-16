@@ -102,36 +102,9 @@ void makeConnection(){
             initClient();
             break;
     }
-
-    // while (1) {
-    //
-    //     FD_ZERO(&fdList);
-    //     FD_SET(0, &fdList);
-    //     FD_SET(useSock, &fdList);
-    //     timeOut.tv_sec = 2;
-    //     timeOut.tv_usec = 0;
-    //     retval = select(FD_SETSIZE, &fdList, NULL, NULL, &timeOut);
-    //     //printf("%d\n", retval);
-    //     if(retval == 1){
-    //         if(FD_ISSET (0, &fdList)){
-    //             fgets(buffer, sizeof(buffer), stdin);
-    //             write(useSock, buffer, sizeof(buffer));
-    //         }
-    //         if(FD_ISSET (useSock, &fdList)){
-    //             if(read(useSock, buffer, sizeof(buffer)) > 0){
-    //                 printf("MSG: %s\n", buffer);
-    //             }
-    //         }
-    //     }
-    //     if(retval == 0){
-    //         printf("1");
-    //     }
-    //     printf("2");
-    // }
 }
 
 void *netController(){
-    int cont = 0;
     char function;
     char type;
     int lvl;
@@ -142,26 +115,31 @@ void *netController(){
     while(1){
         if(read(useSock, buffer, sizeof(buffer)) > 0){
             //FUNCION|typo|lvl|life|attack|y|bPlayer2
-            if(buffer[0] == 'C'){
-                type = buffer[1];
-                lvl = buffer[2] - '0';
-                life = buffer[3] -'0';
-                life *= 10;
-                life += buffer[4] - '0';
-                attack = buffer[5] -'0';
-                attack *= 10;
-                attack += buffer[6] - '0';
-                y = buffer[7] - '0';
-                bPlayer2 = buffer[8] - '0';
-                if(bPlayer2)
+            function = buffer[0];
+            switch (function) {
+                case 'C':
+                    type = buffer[1];
+                    lvl = buffer[2] - '0';
+                    life = buffer[3] -'0';
+                    life *= 10;
+                    life += buffer[4] - '0';
+                    attack = buffer[5] -'0';
+                    attack *= 10;
+                    attack += buffer[6] - '0';
+                    y = buffer[7] - '0';
+                    bPlayer2 = buffer[8] - '0';
+                    if(bPlayer2)
                     x = COLUMS-1;
-                else
+                    else
                     x = 0;
-                spawnWarrior(type, lvl, life, attack, x, y, bPlayer2);
-                //char type, int lvl, int life, int attack, int x, int y, int bPlayer2
-                cont++;
-                if(cont>10)
-                    exit(0);
+                    spawnWarrior(type, lvl, life, attack, x, y, bPlayer2);
+                    //char type, int lvl, int life, int attack, int x, int y, int bPlayer2
+                    break;
+
+                case 'L':
+                    endGame();
+                    printFinish(1);
+                    break;
             }
         }
     }

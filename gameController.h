@@ -31,8 +31,10 @@ struct warrior{
     int direction;
     int x, y;
     int bPlayer2;
+    int cTower;
 };
 
+void printFinish(int bWinner);
 void setBPlayer2(int b);
 void *gameController();
 void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2);

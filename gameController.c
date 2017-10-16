@@ -19,9 +19,21 @@ struct warrior *hand[HAND_SIZE];
 
 pthread_mutex_t fieldLock;
 
+void *towerController(void *arg);
+
 void endGame(){
     bFinishGame = 1;
 }
+
+void loose(){
+
+    msg[0] = 'L';
+    msg[1] = 0;
+    sedMessage(msg);
+    endGame();
+    printFinish(0);
+}
+
 void setBPlayer2(int b){
     bPlayer2 = b;
 }
@@ -111,6 +123,25 @@ void printField(){
     printf("\r\n");
 }
 
+void printFinish(int bWinner){
+    system("clear");
+    printf("/--------------------------/\n\r");
+    printf("/--------------------------/\n\r");
+    printf("/--------------------------/\n\r");
+    printf("/--------------------------/\n\r");
+
+    if(bWinner){
+        printf("/----------Winner----------/\n\r");
+    }else{
+        printf("/----------Looser----------/\n\r");
+    }
+
+    printf("/--------------------------/\n\r");
+    printf("/--------------------------/\n\r");
+    printf("/--------------------------/\n\r");
+    printf("/--------------------------/\n\r");
+}
+
 void nextWarrior(struct warrior *warr){
 
     int pos = rand()%10;
@@ -124,7 +155,7 @@ void nextWarrior(struct warrior *warr){
 }
 
 void startHand(){
-    initShed();
+
     for (int i = 0; i < HAND_SIZE; i++) {
         hand[i] = calloc(1, sizeof(struct warrior));
         nextWarrior(hand[i]);
@@ -136,29 +167,36 @@ void startHand(){
 }
 
 void startTowers(){
+
+    pthread_t pT1;
+    pthread_t pT2;
+    pthread_t pT3;
+
     T1 = calloc(1, sizeof(struct warrior));
     T2 = calloc(1, sizeof(struct warrior));
     T3 = calloc(1, sizeof(struct warrior));
     T1 -> bPlayer2 = bPlayer2;
     T2 -> bPlayer2 = bPlayer2;
     T3 -> bPlayer2 = bPlayer2;
+
+    T1 -> type = 'T'; T1 -> life = 99; T1 -> cTower = 0;
+    T2 -> type = 'T'; T2 -> life = 99; T2 -> cTower = 1;
+    T3 -> type = 'T'; T3 -> life = 99; T3 -> cTower = 0;
+
     if(bPlayer2){
-        T1 -> type = 'T'; T1 -> life = 25;
-        field[1][11] = T1;
-        T2 -> type = 'T'; T2 -> life = 50;
-        field[3][14] = T2;
-        field[4][14] = T2;
-        T3 -> type = 'T'; T3 -> life = 25;
-        field[6][11] = T3;
+
+        T1 -> x = 11; T1 -> y = 1;
+        T2 -> x = 14; T2 -> y = 3;
+        T3 -> x = 11; T3 -> y = 6;
     }else{
-        T1 -> type = 'T'; T1 -> life = 25;
-        field[1][4] = T1;
-        T2 -> type = 'T'; T2 -> life = 50;
-        field[3][1] = T2;
-        field[4][1] = T2;
-        T3 -> type = 'T'; T3 -> life = 25;
-        field[6][4] = T3;
+
+        T1 -> x = 4; T1 -> y = 1;
+        T2 -> x = 1; T2 -> y = 3;
+        T3 -> x = 4; T3 -> y = 6;
     }
+    pthread_create(&pT1, NULL, towerController, (void *) T1);
+    pthread_create(&pT2, NULL, towerController, (void *) T2);
+    pthread_create(&pT3, NULL, towerController, (void *) T3);
 }
 
 
@@ -197,7 +235,7 @@ void *warriorController(void *arg){
     if(bPlayer2 != w -> bPlayer2)
     bEnemy = 1;
 
-    while(!bDestroy){
+    while(!bDestroy && !bFinishGame){
         sleep(1);
         if(w -> life <= 0){
             bDestroy = 1;
@@ -283,10 +321,6 @@ void *warriorController(void *arg){
                 field[nextY][nextX] -> life -= w -> attack;
                 if(field[nextY][nextX] < 0)
                     field[nextY][nextX] = 0;
-                if(field[nextY][nextX] -> type == 'T'){
-                    free(field[nextY][nextX]);
-                    field[nextY][nextX] = NULL;
-                }
             }
         }else{
             field[currentY][currentX] = NULL;
@@ -388,5 +422,37 @@ void selectMenu(){
     cardSelection %= 2;
     if(cardSelection){
         xMenu = 0;
+    }
+}
+
+void *towerController(void *arg){
+
+    struct warrior *t = arg;
+    int x, y;
+    int bDestroy;
+
+    x = t -> x;
+    y = t -> y;
+    pthread_mutex_lock(&fieldLock);
+    field[y][x] = t;
+
+    if(t -> cTower){
+        field[y+1][x] = t;
+    }
+    pthread_mutex_unlock(&fieldLock);
+
+    while(!bDestroy && !bFinishGame){
+        sleep(1);
+        if(t -> life <= 0){
+            if(t -> cTower){
+                loose();
+            }else{
+                pthread_mutex_lock(&fieldLock);
+                field[y][x] = NULL;
+                pthread_mutex_unlock(&fieldLock);
+                free(t);
+                bDestroy = 1;
+            }
+        }
     }
 }
