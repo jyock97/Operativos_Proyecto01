@@ -11,6 +11,8 @@ int main(){
 
     char buffer[2];
 
+    srand(time(NULL));
+    
     pthread_t pGameController;
     pthread_t pNetController;
 

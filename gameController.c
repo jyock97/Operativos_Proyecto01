@@ -112,7 +112,7 @@ void printField(){
 }
 
 void nextWarrior(struct warrior *warr){
-    srand(time(NULL));
+
     int pos = rand()%10;
     struct warrior *tempWarrior = setNewWarrior(shed[pos]);
     warr -> type = pos + 'A';
@@ -129,11 +129,10 @@ void startHand(){
         hand[i] = calloc(1, sizeof(struct warrior));
         nextWarrior(hand[i]);
         printf("%c %d %d\n", hand[i] -> type, hand[i] -> life, hand[i] -> attack);
-    }
+    }        printf("---\n");
     for(int i = 0; i < HAND_SIZE; i++){
         printf("%c %d %d\n", hand[i] -> type, hand[i] -> life, hand[i] -> attack);
-        printf("---\n");
-    }exit(0);
+    }        printf("---\n");
 }
 
 void startTowers(){
