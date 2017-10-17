@@ -7,7 +7,6 @@
 #include "gameController.h"
 
 struct warrior *shed[10][2];
-int position[10];
 
 void addWarrior(int index, struct warrior *new);
 

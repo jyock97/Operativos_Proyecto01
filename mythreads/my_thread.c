@@ -3,7 +3,7 @@
 
 //funcion que se ejecuta cuando un hilo termina
 static void executeExitContext(){
-    printf("Hilo %d terminando\n", curcontext);
+    //printf("Hilo %d terminando\n", curcontext);
     deadThreads[curcontext] =1;
     total_tickets-=tickets[curcontext];
     active_threads_aux--;
@@ -55,7 +55,7 @@ void setup(){
 
 //metodo que termina el hilo
 void my_thread_end(){
-    printf("Hilo %d terminando\n", curcontext);
+    //printf("Hilo %d terminando\n", curcontext);
     deadThreads[curcontext] =1;
     total_tickets-=tickets[curcontext];
     active_threads_aux--;
@@ -71,7 +71,7 @@ void my_thread_yield(){
 //function: funcion a correr
 //tickets para Sorteo
 //prioridad
-void my_thread_create(void *function, int tickets_sched, int priority_sched){
+void my_thread_create(void *function, void *args, int tickets_sched, int priority_sched){
     if(!init){//Si no ha hecho ningun hilo, setea todo
         setup();
     }
@@ -85,7 +85,7 @@ void my_thread_create(void *function, int tickets_sched, int priority_sched){
     uc->uc_stack.ss_flags = 0;
     uc->uc_link = &exitContext;
     sigemptyset(&uc->uc_sigmask);
-    makecontext(uc, function, 0);
+    makecontext(uc, function, 1, args);
     //
     //pone datos para schedulers
     tickets[active_threads] = tickets_sched;

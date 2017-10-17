@@ -1,6 +1,7 @@
 #include "netController.h"
 #include "gameController.h"
-
+#include "mythreads/my_mutex.h"
+#include "mythreads/my_thread.h"
 
 int sock, newSock, useSock;  //file descriptor del socket
 int clientLen;

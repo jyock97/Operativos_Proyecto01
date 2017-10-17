@@ -11,7 +11,7 @@
 
 #define NUMTHREADS 10
 #define STACKSIZE 4096
-#define INTERVAL 500
+#define INTERVAL 100
 
 sigset_t set;
 ucontext_t signal_context;
@@ -39,6 +39,6 @@ void my_thread_end();
 
 void my_thread_yield();
 
-void my_thread_create(void *function, int tickets_sched, int priority_sched);
+void my_thread_create(void *function,void *args, int tickets_sched, int priority_sched);
 
 #endif

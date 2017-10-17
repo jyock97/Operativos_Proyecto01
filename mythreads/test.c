@@ -26,21 +26,22 @@ void thread3(){
     };
 }
 
-void thread2(){
+void thread2(int a){
+    int ax = (int)a;
     int id = 0;
     my_mutex_lock(&lock);
-    printf("hola1 %i\n", id++);
-    my_thread_create(thread3,5,1);
+    printf("hola1 %i %i\n", ax,id++);
+    my_thread_create(thread3,NULL,5,1);
     my_mutex_unlock(&lock);
 }
 
 //archivo de pruebas para los hilos
 int main(){
     int i;
-
+    int a = 23;
     my_mutex_init(&lock);
-    my_thread_create(thread1,5,2);
-    my_thread_create(thread2,5,3);
+    my_thread_create(thread1,NULL,5,2);
+    my_thread_create(thread2,(void*)a,5,3);
     my_thread_chsched("Real");
     run_threads();
     return 0;

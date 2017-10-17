@@ -1,6 +1,6 @@
 #include "genetico.h"
 #include "gameController.h"
-
+int position[10];
 struct warrior *w;
 
 void addWarrior(int index, struct warrior *new){
