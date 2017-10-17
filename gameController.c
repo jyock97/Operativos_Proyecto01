@@ -150,7 +150,7 @@ void printFinish(int bWinner){
 void nextWarrior(struct warrior *warr){
 
     int pos = rand()%10;
-    struct warrior *tempWarrior = setNewWarrior(shed[pos]);
+    struct warrior *tempWarrior = setNewWarrior(shed[pos], pos);
     warr -> type = pos + 'A';
     warr -> intType = tempWarrior -> intType;
     warr -> lvl = tempWarrior -> lvl;
@@ -162,7 +162,9 @@ void startHand(){
 
     for (int i = 0; i < HAND_SIZE; i++) {
         hand[i] = calloc(1, sizeof(struct warrior));
+        printf("%p\t", hand[i]);
         nextWarrior(hand[i]);
+        printf("%p\n", hand[i]);
     }
 }
 
@@ -195,7 +197,6 @@ void startTowers(){
     my_thread_create(towerController, (void *) T3,5,5);
 }
 
-
 void *gameController(){
     my_mutex_init(&fieldLock);
     clearField();
@@ -209,9 +210,7 @@ void *gameController(){
     }
 }
 
-
 void *warriorController(void *arg){
-
     int bDestroy;
     int bEnemy;
     int xDirection;
@@ -310,7 +309,6 @@ void *warriorController(void *arg){
             sedMessage(msg); //FUNCION|typo|lvl|life|attack|y|bPlayer2
             bDestroy = 1;
             field[currentY][currentX] = NULL;
-
         }else if(field[nextY][nextX]){
             if(field[nextY][nextX] -> bPlayer2 != w -> bPlayer2){
                 field[nextY][nextX] -> life -= w -> attack;
@@ -325,11 +323,17 @@ void *warriorController(void *arg){
         }
         my_mutex_unlock(&fieldLock);
     }
+    my_thread_end();
 }
 
 void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2){
-
-    pthread_t *pWarr = malloc(sizeof(pthread_t));
+    FILE *f = fopen("file.txt", "a");
+    fprintf(f, "hilos vivos\n");
+    for (size_t i = 0; i < 100; i++) {
+        fprintf(f, "%i \t",deadThreads[i]);
+    }
+    fprintf(f, "\n" );
+    fclose(f);
     my_mutex_lock(&fieldLock);
     while(field[y][x]){
         my_mutex_unlock(&fieldLock);
@@ -449,4 +453,5 @@ void *towerController(void *arg){
             }
         }
     }
+    my_thread_end();
 }

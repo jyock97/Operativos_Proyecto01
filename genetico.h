@@ -10,7 +10,7 @@ struct warrior *shed[10][2];
 
 void addWarrior(int index, struct warrior *new);
 
-struct warrior *setNewWarrior(struct warrior **poblacion);
+struct warrior *setNewWarrior(struct warrior **poblacion, int type);
 
 void initShed(char *iniFile);
 

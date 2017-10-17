@@ -20,8 +20,8 @@ fd_set fdList;
 
 
 void error(char *msg){
-  perror(msg);
-  exit(1);
+    perror(msg);
+    exit(1);
 }
 
 void initServer(){
@@ -130,9 +130,9 @@ void *netController(){
                     y = buffer[7] - '0';
                     bPlayer2 = buffer[8] - '0';
                     if(bPlayer2)
-                    x = COLUMS-1;
+                        x = COLUMS-1;
                     else
-                    x = 0;
+                        x = 0;
                     spawnWarrior(type, lvl, life, attack, x, y, bPlayer2);
                     //char type, int lvl, int life, int attack, int x, int y, int bPlayer2
                     break;

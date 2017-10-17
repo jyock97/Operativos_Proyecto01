@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define NUMTHREADS 10
+#define NUMTHREADS 100
 #define STACKSIZE 4096
 #define INTERVAL 100
 

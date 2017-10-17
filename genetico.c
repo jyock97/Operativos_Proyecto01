@@ -2,6 +2,8 @@
 #include "gameController.h"
 int position[10];
 struct warrior *w;
+struct warrior *parents[64];
+struct warrior *sons[64];
 
 void addWarrior(int index, struct warrior *new){
     int temp = 1-position[index];
@@ -9,69 +11,63 @@ void addWarrior(int index, struct warrior *new){
     shed[index][temp] = new;
 }
 
-struct warrior *setNewWarrior(struct warrior **poblacion){
+struct warrior *setNewWarrior(struct warrior **poblacion, int type){
 
-    // int size = 2, gen = 5, index;
-    // int mutation = 10,random;
-    // struct warrior **parents = malloc(64*sizeof(struct warrior*));
-    // struct warrior **sons = malloc(64*sizeof(struct warrior*));
-    // while(gen--){
-    //     parents = poblacion;
-    //     index = 0;
-    //     for (int i = 0; i < size; i++) {
-    //         struct warrior *temp = malloc(sizeof(struct warrior));
-    //         temp->attack = parents[i]->attack;
-    //         temp->life = parents[i]->life;
-    //         sons[index] = temp;
-    //         index++;
-    //         temp = malloc(sizeof(struct warrior));
-    //         temp->attack = parents[i+1]->attack;
-    //         temp->life = parents[i+1]->life;
-    //         sons[index] = temp;
-    //         index++;
-    //         temp = malloc(sizeof(struct warrior));
-    //         temp->attack = parents[i]->attack;
-    //         temp->life = parents[i+1]->life;
-    //         sons[index] = temp;
-    //         index++;
-    //         temp = malloc(sizeof(struct warrior));
-    //         temp->attack = parents[i+1]->attack;
-    //         temp->life = parents[i]->life;
-    //         sons[index] = temp;
-    //         index++;
-    //         i++;
-    //     }
-    //     memset(poblacion,0,64);
-    //     for (int i = 0; i < index; i++) {
-    //         poblacion[i] = sons[i];
-    //         random = rand()%101;
-    //         if(random<mutation){
-    //             poblacion[i]->attack +=1;
-    //             poblacion[i]->life +=1;
-    //         }
-    //     }
-    //     size*=2;
-    // }
-    // int lvl = poblacion[0]->attack+poblacion[0]->life, aux = 0;
-    // int pos = 0;
-    // for(int i = 1; i<size; i++){
-    //     aux = poblacion[i]->attack+poblacion[i]->life;
-    //     if(aux>lvl){
-    //         lvl = aux;
-    //         pos = i;
-    //     }
-    // }
-    // poblacion[pos]->lvl = (poblacion[pos]->attack+poblacion[pos]->life)/20;
-    // if(poblacion[pos]->lvl>9)
-    //     poblacion[pos]->lvl = 9;
-    // return poblacion[pos];
-    int type = rand()%10;
-    w -> type = type + 'A';
-    w -> intType = type;
-    w -> lvl = rand()%10;
-    w -> life = rand()%100;
-    w -> attack = rand()%50;
-    return w;
+    int size = 2, gen = 5, index;
+    int mutation = 10,random;
+    for(int i = 0;i<64;i++){
+        parents[i] = calloc(1,sizeof(struct warrior));
+        sons[i] = calloc(1,sizeof(struct warrior));
+    }
+    for (int i = 0; i < size; i++) {
+        parents[i] -> life = poblacion[i]-> life;
+        parents[i] -> attack = poblacion[i]-> attack;
+    }
+    while(gen--){
+        index = 0;
+        for (int i = 0; i < size; i++) {
+            sons[index]-> life = parents[i]->life;
+            sons[index]-> attack = parents[i]->attack;
+            index++;
+
+            sons[index]-> life = parents[i+1]->life;
+            sons[index]-> attack = parents[i+1]->attack;
+            index++;
+
+            sons[index]-> life = parents[i+1]->life;
+            sons[index]-> attack = parents[i]->attack;
+            index++;
+
+            sons[index]-> life = parents[i]->life;
+            sons[index]-> attack = parents[i+1]->attack;
+            index++;
+            i++;
+        }
+        for (int i = 0; i < index; i++) {
+            parents[i] = sons[i];
+            random = rand()%101;
+            if(random<mutation){
+                parents[i]->attack +=1;
+                parents[i]->life +=1;
+            }
+        }
+        size*=2;
+    }
+    int lvl = parents[0]->attack+parents[0]->life, aux = 0;
+    int pos = 0;
+    for(int i = 1; i<size; i++){
+        aux = parents[i]->attack+parents[i]->life;
+        if(aux>lvl){
+            lvl = aux;
+            pos = i;
+        }
+    }
+    parents[pos]->lvl = (parents[pos]->attack+parents[pos]->life)/20;
+    if(parents[pos]->lvl>9)
+        parents[pos]->lvl = 9;
+    parents[pos] -> type = type + 'A';
+    parents[pos] -> intType = type;
+    return parents[pos];
 }
 
 void initShed(char *iniFile){
