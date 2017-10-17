@@ -5,23 +5,18 @@
 void my_thread_chsched(char *sched){
     if(!strcmp(sched,"RoundRobin")){
         active_sched = 0;
-        //printf("El scheduler ha cambiado por %s\n", sched);
     }
     if(!strcmp(sched,"Sorteo")){
         active_sched = 1;
-        //printf("El scheduler ha cambiado por %s\n", sched);
     }
     if(!strcmp(sched,"Real")){
         active_sched = 2;
-        //printf("El scheduler ha cambiado por %s\n", sched);
     }
-    //printf("El Scheduler no ha cambiado\n");
 }
 
 /* Scheduling Round Robin */
 void scheduler(){
     if(active_threads_aux > 0){
-        //printf("saliendo del hilo %d\n", curcontext);
         curcontext = (curcontext + 1);
         if(deadThreads[curcontext% active_threads]){
             while(deadThreads[curcontext% active_threads]){
@@ -30,7 +25,6 @@ void scheduler(){
         }
         curcontext = curcontext % active_threads;
         current_thread = &threads[curcontext];
-        //printf("entrando al hilo %d\n", curcontext);
         setcontext(current_thread);//activa el nuevo hilo
     }
 }
@@ -40,7 +34,6 @@ void sched_sorteo(){
     srand(time(NULL));
     int aux;
     if(active_threads_aux > 0){
-        //printf("saliendo del hilo %d con sorteo\n", curcontext);
         int winner = rand()%(total_tickets+1);//saca el ganador del sorteo
         aux = winner;
         for (int i = 0; i < active_threads; i++) {//revisa quien es el ganador
@@ -59,7 +52,6 @@ void sched_sorteo(){
                 total_tickets++;
             }
         }
-        //printf("entrando al hilo %d\n", curcontext);
         setcontext(current_thread);//activa el nuevo hilo
     }
 }
@@ -81,9 +73,7 @@ void sched_real(){
             }
             sched_real();
         }else{
-            //printf("saliendo del hilo %d con tiempo real\n", last);
             priority_aux[curcontext] = 1;//pone el hilo como ya ejecutado para que no se encicle
-            //printf("entrando al hilo %d\n", curcontext);
             current_thread = &threads[curcontext];//activa el nuevo hilo
             setcontext(current_thread);
         }

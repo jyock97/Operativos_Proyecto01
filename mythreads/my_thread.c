@@ -3,7 +3,6 @@
 
 //funcion que se ejecuta cuando un hilo termina
 static void executeExitContext(){
-    //printf("Hilo %d terminando\n", curcontext);
     deadThreads[curcontext] =1;
     total_tickets-=tickets[curcontext];
     active_threads_aux--;
@@ -55,7 +54,6 @@ void setup(){
 
 //metodo que termina el hilo
 void my_thread_end(){
-    //printf("Hilo %d terminando\n", curcontext);
     deadThreads[curcontext] =1;
     total_tickets-=tickets[curcontext];
     active_threads_aux--;

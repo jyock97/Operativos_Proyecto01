@@ -1,11 +1,10 @@
 #ifndef GAME_CONTROLLER_H
 #define GAME_CONTROLLER_H
-//#include <pthread.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-//#include <sched.h>
 #include "netController.h"
 #include "genetico.h"
 

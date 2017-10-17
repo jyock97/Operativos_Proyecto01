@@ -4,7 +4,6 @@
 //metodo que crea el mutex
 void my_mutex_init(my_mutex *lock){
     lock = 0;
-    //printf("Lock creado\n");
 }
 
 //xchg de ensamblador para hacer la operacion y asignacion atomica
@@ -33,7 +32,6 @@ void my_mutex_lock(my_mutex *lock){
         sleep(1);
     }
     test_and_set(lock);
-    //printf("Lock activado\n");
 }
 //metodo para try-lock del mutex
 void my_mutex_trylock(my_mutex *lock){
@@ -41,7 +39,6 @@ void my_mutex_trylock(my_mutex *lock){
         usleep(1000);
     }
     test_and_set(lock);
-    //printf("Lock activado\n");
 }
 //metodo que desbloquea el mutex
 void my_mutex_unlock(my_mutex *lock){
@@ -51,5 +48,4 @@ void my_mutex_unlock(my_mutex *lock){
         : "=r"(tmp), "+m"(*lock)
         : "0"(tmp)
         :"memory");
-    //printf("Lock desactivado\n");
 }
