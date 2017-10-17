@@ -1,5 +1,3 @@
-
-
 # Documentación
 # Proyecto 1
 # Principios de Sistemas Operativos
@@ -103,7 +101,7 @@ El juego presenta un error cuando se envian varios mensajes, lo cúal no se pudo
 
 En este proyecto, la parte de la implementación de los hilos fue muy pesada, por lo que se recomienda empezar por ahi. El tema es complicado para encontrar ejemplos sencillos, por lo que se recomienda tener paciencia, leer mucho, ver muchos ejemplos y tratar de entender todos estos.
 
-## Bibliografı́a
+## Bibliografia
 - Multitasking using setjmp, l. (2017). Multitasking using setjmp, longjmp. Stackoverflow.com.  17 de octubre 2017, obtenido de  https://stackoverflow.com/questions/2560792/multitasking-using-setjmp-longjmp
 
 - mfiber: Simple User Level Thread Library.. (2017). LID: Lost In Droid. 17 de octubre 2017, obtenido de https://machiry.wordpress.com/2012/01/02/mfiber-simple-user-land-thread-library/
