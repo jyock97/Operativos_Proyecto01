@@ -30,13 +30,13 @@ void endGame(){
     bFinishGame = 1;
 }
 
-void loose(){
+void lose(){
 
     msg[0] = 'L';
     msg[1] = 0;
     sedMessage(msg);
-    endGame();
     printFinish(0);
+    endGame();
 }
 
 void setBPlayer2(int b){
@@ -138,7 +138,7 @@ void printFinish(int bWinner){
     if(bWinner){
         printf("/----------Winner----------/\n\r");
     }else{
-        printf("/----------Looser----------/\n\r");
+        printf("/----------Loser-----------/\n\r");
     }
 
     printf("/--------------------------/\n\r");
@@ -312,7 +312,7 @@ void *warriorController(void *arg){
         }else if(field[nextY][nextX]){
             if(field[nextY][nextX] -> bPlayer2 != w -> bPlayer2){
                 field[nextY][nextX] -> life -= w -> attack;
-                if(field[nextY][nextX] < 0)
+                if(field[nextY][nextX] -> life < 0)
                     field[nextY][nextX] = 0;
             }
         }else{
@@ -327,13 +327,7 @@ void *warriorController(void *arg){
 }
 
 void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2){
-    FILE *f = fopen("file.txt", "a");
-    fprintf(f, "hilos vivos\n");
-    for (size_t i = 0; i < 100; i++) {
-        fprintf(f, "%i \t",deadThreads[i]);
-    }
-    fprintf(f, "\n" );
-    fclose(f);
+
     my_mutex_lock(&fieldLock);
     while(field[y][x]){
         my_mutex_unlock(&fieldLock);
@@ -443,7 +437,7 @@ void *towerController(void *arg){
         sleep(1);
         if(t -> life <= 0){
             if(t -> cTower){
-                loose();
+                lose();
             }else{
                 my_mutex_lock(&fieldLock);
                 field[y][x] = NULL;

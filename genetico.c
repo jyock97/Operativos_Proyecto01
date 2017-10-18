@@ -5,27 +5,29 @@ struct warrior *w;
 struct warrior *parents[64];
 struct warrior *sons[64];
 
+//Funcion que agrega el ultimo warrior muerto
 void addWarrior(int index, struct warrior *new){
     int temp = 1-position[index];
     position[index] = temp;
     shed[index][temp] = new;
 }
 
+//Funcion que realiza el algoritmo genetico
 struct warrior *setNewWarrior(struct warrior **poblacion, int type){
 
     int size = 2, gen = 5, index;
     int mutation = 10,random;
-    for(int i = 0;i<64;i++){
+    for(int i = 0;i<64;i++){//inicia las estructuras
         parents[i] = calloc(1,sizeof(struct warrior));
         sons[i] = calloc(1,sizeof(struct warrior));
     }
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {//setea los primeros padres
         parents[i] -> life = poblacion[i]-> life;
         parents[i] -> attack = poblacion[i]-> attack;
     }
-    while(gen--){
+    while(gen--){//para despues de x generaciones
         index = 0;
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++) {//realiza los cruces con los padres
             sons[index]-> life = parents[i]->life;
             sons[index]-> attack = parents[i]->attack;
             index++;
@@ -46,7 +48,7 @@ struct warrior *setNewWarrior(struct warrior **poblacion, int type){
         for (int i = 0; i < index; i++) {
             parents[i] = sons[i];
             random = rand()%101;
-            if(random<mutation){
+            if(random<mutation){//revisa el factor de mutacion
                 parents[i]->attack +=1;
                 parents[i]->life +=1;
             }
@@ -55,7 +57,7 @@ struct warrior *setNewWarrior(struct warrior **poblacion, int type){
     }
     int lvl = parents[0]->attack+parents[0]->life, aux = 0;
     int pos = 0;
-    for(int i = 1; i<size; i++){
+    for(int i = 1; i<size; i++){//busca el mejor elemento
         aux = parents[i]->attack+parents[i]->life;
         if(aux>lvl){
             lvl = aux;
@@ -65,11 +67,13 @@ struct warrior *setNewWarrior(struct warrior **poblacion, int type){
     parents[pos]->lvl = (parents[pos]->attack+parents[pos]->life)/20;
     if(parents[pos]->lvl>9)
         parents[pos]->lvl = 9;
-    parents[pos] -> type = type + 'A';
+    parents[pos] -> type = type + 'A';//setea demas datos
     parents[pos] -> intType = type;
     return parents[pos];
 }
 
+//Funcion que inicia matriz de elementos para usar en el algoritmo genetico
+//lee desde el game.ini
 void initShed(char *iniFile){
 
     char ss[256], *temp;

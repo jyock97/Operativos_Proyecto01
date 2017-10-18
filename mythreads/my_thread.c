@@ -7,6 +7,7 @@ static void executeExitContext(){
     total_tickets-=tickets[curcontext];
     active_threads_aux--;
     timer_interrupt();
+    while(1);
 }
 
 //crea contexto para ejecutar cuando un hilo termina
@@ -84,7 +85,6 @@ void my_thread_create(void *function, void *args, int tickets_sched, int priorit
     uc->uc_link = &exitContext;
     sigemptyset(&uc->uc_sigmask);
     makecontext(uc, function, 1, args);
-    //
     //pone datos para schedulers
     tickets[active_threads] = tickets_sched;
     priority[active_threads] = priority_sched;

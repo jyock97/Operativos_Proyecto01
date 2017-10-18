@@ -138,8 +138,8 @@ void *netController(){
                     break;
 
                 case 'L':
-                    endGame();
                     printFinish(1);
+                    endGame();
                     break;
             }
         }

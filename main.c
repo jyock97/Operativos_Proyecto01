@@ -34,8 +34,8 @@ void input(){
         read(0, buffer, 2);
     }
     system ("/bin/stty cooked");
-    exit(0);
     endGame();
+    exit(0);
 }
 
 int main(int argc, char *argv[]){
