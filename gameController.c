@@ -26,10 +26,18 @@ my_mutex fieldLock;
 
 void *towerController(void *arg);
 
+/*
+ * Funcion la cual asigna el valor True a un booleano utilizado para
+ * parar todos los hilos.
+ */
 void endGame(){
     bFinishGame = 1;
 }
 
+/*
+ * Funcion la cual se ejecuta cuando se pierde el juego, enviando un mensaje
+ * a la otra computadora de que el juego termino y que es el ganador.
+ */
 void lose(){
 
     msg[0] = 'L';
@@ -39,10 +47,20 @@ void lose(){
     endGame();
 }
 
+/*
+ * Funcion la cual asigna True si es un cliente y False si es el servidor,
+ * con el fin de saber si la computadora juega como jugador 2 o no.
+ *
+ * Entrada:
+ * b -> booleano True o False.
+ */
 void setBPlayer2(int b){
     bPlayer2 = b;
 }
 
+/*
+ * Funcion la cual se encarga de limpiar el campo.
+ */
 void clearField(){
     for (size_t i = 0; i < ROWS; i++) {
         for (size_t j = 0; j < COLUMS; j++) {
@@ -51,6 +69,10 @@ void clearField(){
     }
 }
 
+/*
+ * Funcion la cual se encarga de mostrar en pantalla el campo de juego y
+ * los elementos de la mano.
+ */
 void printField(){
     my_mutex_lock(&fieldLock);
     for (size_t i = 0; i < ROWS; i++) {
@@ -128,6 +150,12 @@ void printField(){
     printf("\r\n");
 }
 
+/*
+ * Funcion la cual imprime el mensaje de ganar o perder.
+ *
+ * Entrada:
+ * bWinner -> booleano el cual significa si el jugador gano o no.
+ */
 void printFinish(int bWinner){
     system("clear");
     printf("/--------------------------/\n\r");
@@ -147,6 +175,15 @@ void printFinish(int bWinner){
     printf("/--------------------------/\n\r");
 }
 
+/*
+ * Funcion la cual asigna los valores de un nuevo guerrero
+ * a la referencia de guerrero que se pasa por parametro.
+ * Esta funcion es llamada cuando se pone una carta en juego,
+ * con el fin de cambiar los valores de esa carta por una nueva.
+ *
+ * Entrada:
+ * warr -> puntero del guerrero al cual se le deben cambiar los valores.
+ */
 void nextWarrior(struct warrior *warr){
 
     int pos = rand()%10;
@@ -158,6 +195,10 @@ void nextWarrior(struct warrior *warr){
     warr -> attack = tempWarrior -> attack;
 }
 
+/*
+ * Funcion la cual se encarga de iniciar los valores de cada guerrero
+ * situado en la mano o baraja del juego.
+ */
 void startHand(){
 
     for (int i = 0; i < HAND_SIZE; i++) {
@@ -168,6 +209,10 @@ void startHand(){
     }
 }
 
+/*
+ * Funcion la cual inicializa los valores de las torres e inicia los hilos
+ * de cada una para controlar cuando son destruidas.
+ */
 void startTowers(){
 
     T1 = calloc(1, sizeof(struct warrior));
@@ -197,6 +242,10 @@ void startTowers(){
     my_thread_create(towerController, (void *) T3,5,5);
 }
 
+/*
+ * Funcion la cual es utilizada por el hilo del juego el cual controla la
+ * muestra del campo.
+ */
 void *gameController(){
     my_mutex_init(&fieldLock);
     clearField();
@@ -210,6 +259,10 @@ void *gameController(){
     }
 }
 
+/*
+ * Funcion utilizada por cada hilo de guerrero el cual controla su movimiento
+ * y ataque.
+ */
 void *warriorController(void *arg){
     int bDestroy;
     int bEnemy;
@@ -326,6 +379,19 @@ void *warriorController(void *arg){
     my_thread_end();
 }
 
+/*
+ * Funcion la cual es ejecutada para inicializar un guerrero y crear su hilo
+ * respectivo.
+ *
+ * Entrada:
+ * type -> tipo del guerrero
+ * lvl -> nivel del guerrero
+ * life -> vida del guerrero
+ * attack -> ataque del guerrero
+ * x -> coordenada x del guerrero
+ * y -> coordenada y del guerrero
+ * bPlayer2 -> booleano que dice si pertenece al jugador dos
+ */
 void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2){
 
     my_mutex_lock(&fieldLock);
@@ -354,14 +420,25 @@ void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bP
     my_thread_create(warriorController,(void *) field[y][x],5,1);
 }
 
+/*
+ * Funcion la cual desplaza el menu hacia arriba.
+ */
 void upMenu(){
     yMenu += (ROWS - 1);
     yMenu %= ROWS;
 }
+
+/*
+ * Funcion la cual desplaza el menu hacia abajo.
+ */
 void downMenu(){
     yMenu ++;
     yMenu %= ROWS;
 }
+
+/*
+ * Funcion la cual desplaza el menu hacia la izquierda.
+ */
 void leftMenu(){
     if(cardSelection){
         xMenu += (HAND_SIZE - 1);
@@ -371,6 +448,10 @@ void leftMenu(){
         xMenu %= COLUMS;
     }
 }
+
+/*
+ * Funcion la cual desplaza el menu hacia la derecha.
+ */
 void rigthMenu(){
     if(cardSelection){
         xMenu++;
@@ -380,6 +461,11 @@ void rigthMenu(){
         xMenu %= COLUMS;
     }
 }
+
+/*
+ * Funcion la cual alterna entre la seleccion de la carta y la posicion
+ * en el campo. Ademas de llamar a spawnWarrior para posicionarlo en el tablero.
+ */
 void selectMenu(){
 
     if(cardSelection){
@@ -417,6 +503,10 @@ void selectMenu(){
     }
 }
 
+/*
+ * Funcion la cual es utilizada por el hilo de la torre con el fin de verificar
+ * cuando se queda sin vida y si es la torre central para terminar el juego.
+ */
 void *towerController(void *arg){
 
     struct warrior *t = arg;

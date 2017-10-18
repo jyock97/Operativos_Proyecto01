@@ -11,10 +11,22 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <errno.h>
+
+/*
+ * Funcion la cual es llamada para iniciar la conexion del juego.
+ */
 void makeConnection();
 
+/*
+ * Funcion la cual es utilizada por un hilo para controlar los mensajes
+ * recividos y llamar a las funciones correspondientes.
+ */
 void *netController();
 
+/*
+ * Funcion la cual se encarga de enviar un mensaje al cliente o servidor
+ * al cual este conectado.
+ */
 void sedMessage(char *msg);
 
 #endif

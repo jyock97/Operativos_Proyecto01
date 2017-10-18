@@ -19,11 +19,21 @@ struct timeval timeOut;
 fd_set fdList;
 
 
+/*
+ * Funcion la cual es utilizada durante el proceso de iniciar la conexion
+ * se encarga de mostrar los mensajes de errores y terminar el programa.
+ *
+ * Entrada:
+ * msg -> mensaje de error descriptivo del error.
+ */
 void error(char *msg){
     perror(msg);
     exit(1);
 }
 
+/*
+ * Funcion la cual se encarga de iniciar la conexion del lado del servidor.
+ */
 void initServer(){
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -56,6 +66,10 @@ void initServer(){
     setBPlayer2(0);
 }
 
+/*
+ * Funcion la cual se encarga de iniciar la conexion del lado del cliente
+ * conectandolo a un ip pedida al usuario.
+ */
 void initClient(){
 
     sock = socket(AF_INET, SOCK_STREAM,0);
@@ -79,6 +93,9 @@ void initClient(){
     setBPlayer2(1);
 }
 
+/*
+ * Funcion la cual es llamada para iniciar la conexion del juego.
+ */
 void makeConnection(){
 
     char c;
@@ -105,6 +122,10 @@ void makeConnection(){
     }
 }
 
+/*
+ * Funcion la cual es utilizada por un hilo para controlar los mensajes
+ * recividos y llamar a las funciones correspondientes.
+ */
 void *netController(){
     char function;
     char type;
@@ -146,6 +167,10 @@ void *netController(){
     }
 }
 
+/*
+ * Funcion la cual se encarga de enviar un mensaje al cliente o servidor
+ * al cual este conectado.
+ */
 void sedMessage(char *msg) {
     write(useSock, msg, strlen(msg));
 }

@@ -33,15 +33,56 @@ struct warrior{
     int cTower;
 };
 
-void printFinish(int bWinner);
+
+/*
+ * Funcion la cual asigna True si es un cliente y False si es el servidor,
+ * con el fin de saber si la computadora juega como jugador 2 o no.
+ *
+ * Entrada:
+ * b -> booleano True o False.
+ */
 void setBPlayer2(int b);
+
+/*
+ * Funcion la cual desplaza el menu hacia arriba.
+ */
+void upMenu();
+
+/*
+ * Funcion la cual desplaza el menu hacia abajo.
+ */
+void downMenu();
+
+/*
+ * Funcion la cual desplaza el menu hacia la izquierda.
+ */
+void leftMenu();
+
+/*
+ * Funcion la cual desplaza el menu hacia la derecha.
+ */
+void rigthMenu();
+
+/*
+ * Funcion la cual alterna entre la seleccion de la carta y la posicion
+ * en el campo. Ademas de llamar a spawnWarrior para posicionarlo en el tablero.
+ */
+void selectMenu();
+
+/*
+ * Funcion la cual es utilizada por el hilo del juego el cual controla la
+ * muestra del campo.
+ */
 void *gameController();
 void spawnWarrior(char type, int lvl, int life, int attack, int x, int y, int bPlayer2);
-void upMenu();
-void downMenu();
-void leftMenu();
-void rigthMenu();
-void selectMenu();
 void endGame();
+
+/*
+ * Funcion la cual imprime el mensaje de ganar o perder.
+ *
+ * Entrada:
+ * bWinner -> booleano el cual significa si el jugador gano o no.
+ */
+void printFinish(int bWinner);
 
 #endif
